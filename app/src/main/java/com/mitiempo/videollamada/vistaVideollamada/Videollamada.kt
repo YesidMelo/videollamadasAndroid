@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.mitiempo.videollamada.R
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosCamara
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosMicrofono
 
 class Videollamada @JvmOverloads constructor(
     context: Context,
@@ -40,9 +41,8 @@ class Videollamada @JvmOverloads constructor(
 
     fun conOnRequestPermissionsResult(requestCode: Int,permissions: Array<out String>,grantResults: IntArray) : Videollamada{
 
-        ManejadorPermisosCamara
-            .getInstancia()
-            .conOnRequestPermissionsResult(requestCode, permissions, grantResults)
+        ManejadorPermisosCamara.getInstancia().conOnRequestPermissionsResult(requestCode, permissions, grantResults)
+        ManejadorPermisosMicrofono.getInstancia().conOnRequestPermissionsResult(requestCode, permissions, grantResults)
 
         return this
     }
@@ -56,6 +56,7 @@ class Videollamada @JvmOverloads constructor(
     fun iniciarVista() : Videollamada{
         post {
             verificarPermisosCamara()
+            verificarPermisosMicrofono()
         }
         return this
     }
@@ -76,6 +77,23 @@ class Videollamada @JvmOverloads constructor(
             }
             .verificarPermisos()
 
+    }
+
+    private fun verificarPermisosMicrofono(){
+        ManejadorPermisosMicrofono
+            .getInstancia()
+            .conContexto(context)
+            .conEscuchadorRespuestaPositivaDialogo {
+
+            }
+            .conEscuhadorRespuestaNegativaDialogo {
+
+            }
+            .conEscuchadorMensajeSolicitarPermisos{
+                    titulo,mensaje,respuestaPositiva,respuestaNegativa ->
+                respuestaPositiva?.invoke()
+            }
+            .verificarPermisos()
     }
 
 

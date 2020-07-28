@@ -2,4 +2,6 @@
     <string name="app_name">videollamada</string>
     <string name="camera_option">Camara</string>
     <string name="camara_deshabilitada">¿Desea habilitar la camara?</string>
+    <string name="Microfono">Microfono</string>
+    <string name="microfono_deshabilitado">Microfono deshabilitado</string>
 </resources>
