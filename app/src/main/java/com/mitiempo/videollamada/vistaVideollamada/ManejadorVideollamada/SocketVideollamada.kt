@@ -4,25 +4,35 @@ import android.util.Log
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
+import com.google.gson.Gson
 import com.mitiempo.videollamada.R
+import com.mitiempo.videollamada.vistaVideollamada.Modelos.Subscribe
 
 class SocketVideollamada(
     private val url : String
 ) {
 
     enum class ServiciosSocket(private val nombreServicio: String) {
+        connection("connection"),
+        connect("connect"),
         subscribe("subscribe"),
         new_user("new user"),
         newUserStart("newUserStart"),
         sdp("sdp"),
         ice_candidates("ice candidates"),
         chat("chat"),
-        connect("connect"),
+
         ;
 
         fun traerNombreServicios(): String {
             return nombreServicio
         }
+    }
+
+    private var room : String = "usuario1_usuario2"
+    fun conRoom(room : String) : SocketVideollamada{
+        this.room = room
+        return this
     }
 
     private var escuchadorFalla: ((Int, Int) -> Unit)? = null
@@ -78,14 +88,7 @@ class SocketVideollamada(
             ?.on(ServiciosSocket.connect.traerNombreServicios(), object : Emitter.Listener {
 
                 override fun call(vararg args: Any?) {
-                    Log.e(T, "escuchador connect");
-                }
-
-            })
-            ?.on(ServiciosSocket.subscribe.traerNombreServicios(), object : Emitter.Listener {
-
-                override fun call(vararg args: Any?) {
-                    Log.e(T, "escuchador subscribe");
+                    suscribirseAVideollamada()
                 }
 
             })
@@ -120,10 +123,27 @@ class SocketVideollamada(
 
     }
 
+    private fun suscribirseAVideollamada(){
+        Log.e(T," escuchador connect ${socket?.id()}");
+
+        val subscribe = Subscribe()
+        subscribe.room = this.room
+        subscribe.socketId = socket?.id()
+
+        socket?.emit(ServiciosSocket.subscribe.traerNombreServicios(), Gson().toJson(subscribe))
+        socket?.on(ServiciosSocket.subscribe.traerNombreServicios(), object : Emitter.Listener {
+
+            override fun call(vararg args: Any?) {
+                Log.e(T, "escuchador subscribe : ");
+            }
+
+        })
+    }
+
 
     private fun unirseVideollamada(){
         try {
-            socket?.emit(ServiciosSocket.connect.traerNombreServicios(),"Yesid")
+            socket?.emit(ServiciosSocket.connection.traerNombreServicios(),"Yesid")
         }catch (e : Exception){
 
         }

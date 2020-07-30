@@ -9,7 +9,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        videollamada.iniciarVista()
+        videollamada
+            .conURLVideollamada("http://192.168.0.3:3000")
+            .conRoom("Paciente_psicologo")
+            .iniciarVista()
     }
 
     override fun onStart() {

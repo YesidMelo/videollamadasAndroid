@@ -18,9 +18,15 @@ class Videollamada @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyle, defStyleRes) {
 
-    private var canalComunicacion : String ?= null
-    fun conCanalDeComunicacion(canalComunicacion : String) : Videollamada{
-        this.canalComunicacion = canalComunicacion
+    private var room : String ?= null
+    fun conRoom(room : String) : Videollamada{
+        this.room = room
+        return this
+    }
+
+    private var urlVideollamada : String = "http://192.168.0.3:3000"
+    fun conURLVideollamada(urlVideollamada : String ) : Videollamada{
+        this.urlVideollamada = urlVideollamada
         return this
     }
 
@@ -60,7 +66,6 @@ class Videollamada @JvmOverloads constructor(
         post {
             verificarPermisosCamara()
             verificarPermisosMicrofono()
-            iniciarManejadorCamaraLocal()
             inicializarVideollamada()
         }
         return this
@@ -101,21 +106,8 @@ class Videollamada @JvmOverloads constructor(
             .verificarPermisos()
     }
 
-    private fun iniciarManejadorCamaraLocal(){
 
-        ManejadorVistaVideollamada(
-            context,
-            camara_local,
-            camara_remota
-        )
-            .conURL("ws://192.168.0.3:3000/?room=")
-            .conRoom("Prueba_1869339814")
-            .iniciarVideoLlamada()
-
-
-    }
-
-    private var manejador = SocketVideollamada("http://192.168.0.3:3000")
+    private var manejador = SocketVideollamada(urlVideollamada)
     private fun inicializarVideollamada(){
         manejador
             .conEscuchadorFalla { titulo, mensaje ->
