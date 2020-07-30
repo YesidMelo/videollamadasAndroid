@@ -9,7 +9,8 @@ import org.json.JSONObject
 
 class SocketVideollamada(
     private val url : String
-) {
+)
+{
 
     enum class ServiciosSocket(private val nombreServicio: String) {
         connection("connection"),
@@ -121,27 +122,22 @@ class SocketVideollamada(
 
         socket?.emit(ServiciosSocket.subscribe.traerNombreServicios(), jsonAEnviar)
 
-        socket?.on(ServiciosSocket.new_user.traerNombreServicios(), object : Emitter.Listener {
-
-            override fun call(vararg args: Any?) {
-                iniciarEmisionNuevoUsuario(args[0] as JSONObject)
-            }
-
-        })
+        socket?.on(ServiciosSocket.new_user.traerNombreServicios()) { args -> iniciarEmisionNuevoUsuario(args[0] as JSONObject) }
     }
 
+    private var listaPCs = emptyList<String>().toMutableList()
     private fun iniciarEmisionNuevoUsuario(jsonObject: JSONObject){
 
         val jsonAEnviar = "{ \"to\" : \"${jsonObject["socketId"]}\" ,\"sender\" : \"${socket?.id()}\" }"
 
         socket?.emit(ServiciosSocket.newUserStart.traerNombreServicios(),jsonAEnviar)
-        socket?.on(ServiciosSocket.newUserStart.traerNombreServicios(), object : Emitter.Listener {
+        socket?.on(ServiciosSocket.newUserStart.traerNombreServicios()) {
+            args ->
 
-                override fun call(vararg args: Any?) {
-                    Log.e(T, "escuchador newUserStart");
-                }
+            listaPCs.add(((args[0] as JSONObject)["sender"] as String?)!!)
+            Log.e(T, "escuchador newUserStart ${listaPCs}");
 
-            })
+        }
 
     }
 

@@ -7,7 +7,7 @@ import android.widget.LinearLayout
 import com.mitiempo.videollamada.R
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosCamara
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosMicrofono
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorVistaVideollamada
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraLocal
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.SocketVideollamada
 import kotlinx.android.synthetic.main.visualizador_vista_videollamada.view.*
 
@@ -66,7 +66,8 @@ class Videollamada @JvmOverloads constructor(
         post {
             verificarPermisosCamara()
             verificarPermisosMicrofono()
-            inicializarVideollamada()
+            inicializarSocketVideollamada()
+            iniciarCapturaCamaraLocal()
         }
         return this
     }
@@ -108,13 +109,25 @@ class Videollamada @JvmOverloads constructor(
 
 
     private var manejador = SocketVideollamada(urlVideollamada)
-    private fun inicializarVideollamada(){
+    private fun inicializarSocketVideollamada(){
         manejador
             .conEscuchadorFalla { titulo, mensaje ->
 
             }
             .iniciarVideoLlamada()
     }
+
+    private var manejadorCamaraLocal : ManejadorCamaraLocal ?= null
+    private fun iniciarCapturaCamaraLocal(){
+        if(manejadorCamaraLocal == null ){
+            manejadorCamaraLocal = ManejadorCamaraLocal(context,camara_local)
+        }
+
+        manejadorCamaraLocal
+            ?.iniciarVideoCaptura()
+    }
+
+
 
     init {
         LayoutInflater.from(context).inflate(R.layout.visualizador_vista_videollamada,this,true)
