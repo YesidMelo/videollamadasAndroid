@@ -4,9 +4,8 @@ import android.util.Log
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
-import com.google.gson.Gson
 import com.mitiempo.videollamada.R
-import com.mitiempo.videollamada.vistaVideollamada.Modelos.Subscribe
+import org.json.JSONObject
 
 class SocketVideollamada(
     private val url : String
@@ -92,13 +91,6 @@ class SocketVideollamada(
                 }
 
             })
-            ?.on(ServiciosSocket.newUserStart.traerNombreServicios(), object : Emitter.Listener {
-
-                override fun call(vararg args: Any?) {
-                    Log.e(T, "escuchador newUserStart");
-                }
-
-            })
             ?.on(ServiciosSocket.sdp.traerNombreServicios(), object : Emitter.Listener {
 
                 override fun call(vararg args: Any?) {
@@ -124,20 +116,33 @@ class SocketVideollamada(
     }
 
     private fun suscribirseAVideollamada(){
-        Log.e(T," escuchador connect ${socket?.id()}");
 
-        val subscribe = Subscribe()
-        subscribe.room = this.room
-        subscribe.socketId = socket?.id()
+        val jsonAEnviar = "{ \"room\" : \"${this.room}\", \"socketId\" : \"${socket?.id()}\" }"
 
-        socket?.emit(ServiciosSocket.subscribe.traerNombreServicios(), Gson().toJson(subscribe))
-        socket?.on(ServiciosSocket.subscribe.traerNombreServicios(), object : Emitter.Listener {
+        socket?.emit(ServiciosSocket.subscribe.traerNombreServicios(), jsonAEnviar)
+
+        socket?.on(ServiciosSocket.new_user.traerNombreServicios(), object : Emitter.Listener {
 
             override fun call(vararg args: Any?) {
-                Log.e(T, "escuchador subscribe : ");
+                iniciarEmisionNuevoUsuario(args[0] as JSONObject)
             }
 
         })
+    }
+
+    private fun iniciarEmisionNuevoUsuario(jsonObject: JSONObject){
+
+        val jsonAEnviar = "{ \"to\" : \"${jsonObject["socketId"]}\" ,\"sender\" : \"${socket?.id()}\" }"
+
+        socket?.emit(ServiciosSocket.newUserStart.traerNombreServicios(),jsonAEnviar)
+        socket?.on(ServiciosSocket.newUserStart.traerNombreServicios(), object : Emitter.Listener {
+
+                override fun call(vararg args: Any?) {
+                    Log.e(T, "escuchador newUserStart");
+                }
+
+            })
+
     }
 
 
