@@ -4,4 +4,6 @@
     <string name="camara_deshabilitada">¿Desea habilitar la camara?</string>
     <string name="Microfono">Microfono</string>
     <string name="microfono_deshabilitado">Microfono deshabilitado</string>
+    <string name="videollamada">Videollamada</string>
+    <string name="fallo_la_conexion_videollamada">Fallo la conexion a la videollamada</string>
 </resources>

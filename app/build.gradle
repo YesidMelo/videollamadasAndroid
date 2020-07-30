@@ -38,6 +38,10 @@ dependencies {
     implementation 'org.webrtc:google-webrtc:1.0.22672'
     implementation files('libs/autobanh.jar')
 
+    implementation('com.github.nkzawa:socket.io-client:0.5.0') {
+        exclude group: 'org.json', module: 'json'
+    }
+
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
