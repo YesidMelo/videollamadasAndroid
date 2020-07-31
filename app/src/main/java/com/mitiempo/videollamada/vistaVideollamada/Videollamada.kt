@@ -74,6 +74,7 @@ class Videollamada @JvmOverloads constructor(
             inicializarSocketVideollamada()
 //            iniciarCapturaCamaraLocal()
             iniciarCapturaCamaraRemota()
+            ponerEscuchadoresManejadorVideollamada()
 
         }
         return this
@@ -175,6 +176,21 @@ class Videollamada @JvmOverloads constructor(
                 val sesionDescription = it
                 Log.e("asd","");
             }
+    }
+
+    private fun ponerEscuchadoresManejadorVideollamada(){
+
+        menuManejadorVideollamada
+            .conEscuchadorLlamar {
+                manejadorCamaraRemota?.call(escuchadorSdpObserver)
+            }
+            .conEscuchadorColgar {
+
+            }
+            .conEscuchadorMicrofono {
+
+            }
+
     }
 
     init {
