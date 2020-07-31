@@ -2,6 +2,7 @@ package com.mitiempo.videollamada.vistaVideollamada
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.mitiempo.videollamada.R
@@ -11,6 +12,7 @@ import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.Manejad
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraRemota
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.SocketVideollamada
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.EscuchadorPeerConnectionObserver
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.EscuchadorSdpObserver
 import kotlinx.android.synthetic.main.visualizador_vista_videollamada.view.*
 
 class Videollamada @JvmOverloads constructor(
@@ -134,10 +136,34 @@ class Videollamada @JvmOverloads constructor(
 
     private var manejadorCamaraRemota : ManejadorCamaraRemota ?= null
     private val escuchadorPeerConnectionObserver  = EscuchadorPeerConnectionObserver()
+
     private fun iniciarCapturaCamaraRemota(){
+
+        configurarEscuchadorSdpObserver()
+
         if(manejadorCamaraRemota == null ){
-            manejadorCamaraRemota = ManejadorCamaraRemota(context,escuchadorPeerConnectionObserver)
+            manejadorCamaraRemota = ManejadorCamaraRemota(
+                context,
+                escuchadorPeerConnectionObserver,
+                "stun:stun.l.google.com:19302"
+                )
         }
+
+//        manejadorCamaraRemota?.initSurfaceView(camara_remota)
+        manejadorCamaraRemota?.initSurfaceView(camara_local)
+        manejadorCamaraRemota?.iniciarVideoCaptura(camara_local)
+
+
+
+
+    }
+    private val escuchadorSdpObserver = EscuchadorSdpObserver()
+    private fun configurarEscuchadorSdpObserver(){
+        escuchadorSdpObserver
+            .conEscuchadorOnCreateSuccess {
+                val sesionDescription = it
+                Log.e("asd","");
+            }
     }
 
     init {
