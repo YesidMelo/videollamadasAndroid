@@ -81,6 +81,10 @@ class ManejadorCamaraRemota
 
             val localVideoTrack = peerConnectionFactory.createVideoTrack(LOCAL_TRACK_ID,localVideoSource)
             localVideoTrack.addSink(videoLocal)
+
+            val localStream =peerConnectionFactory.createLocalMediaStream(LOCAL_STREAM_ID)
+            localStream.addTrack(localVideoTrack)
+            peerConnection?.addStream(localStream)
         }
     }
 
