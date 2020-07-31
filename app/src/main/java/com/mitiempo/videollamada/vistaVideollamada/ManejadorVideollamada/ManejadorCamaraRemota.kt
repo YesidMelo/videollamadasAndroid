@@ -16,11 +16,12 @@ class ManejadorCamaraRemota
 
     companion object{
         private const val LOCAL_TRACK_ID = "local_track"
+        private const val LOCAL_STREAM_ID = "local_track"
     }
 
     private val rootEglBase = EglBase.create()
 
-    private val peerConnectionFactory by lazy { buildPeerConnectionFactory() }
+    private val peerConnectionFactory by lazy { buildPeerConnectionFactory() }//ok
     private fun buildPeerConnectionFactory() : PeerConnectionFactory{
         return PeerConnectionFactory
             .builder()
@@ -33,7 +34,7 @@ class ManejadorCamaraRemota
             .createPeerConnectionFactory()
     }
 
-    private val videoCapturer by lazy { traerVideoCapturer(context) }
+    private val videoCapturer by lazy { traerVideoCapturer(context) }//ok
     private fun traerVideoCapturer(context: Context) = Camera2Enumerator(context)
         .run {
             deviceNames.find {
@@ -43,7 +44,14 @@ class ManejadorCamaraRemota
             }?: throw IllegalStateException()
         }
 
-    private val localVideoSource by lazy { peerConnectionFactory.createVideoSource(false) }
+    private val localVideoSource by lazy { peerConnectionFactory.createVideoSource(false) }//ok
+
+    private val iceServer = listOf(PeerConnection.IceServer.builder(rutaIceServer).createIceServer())
+    private val peerConnection by lazy { buildPeerConnection(escuchadorPeerConnectionObserver) }
+    private fun buildPeerConnection(escuchadorPeerConnectionObserver: EscuchadorPeerConnectionObserver) = peerConnectionFactory.createPeerConnection(
+        iceServer,
+        escuchadorPeerConnectionObserver
+    )
 
     init {
         iniciarPeerConnectionFactory(context)
