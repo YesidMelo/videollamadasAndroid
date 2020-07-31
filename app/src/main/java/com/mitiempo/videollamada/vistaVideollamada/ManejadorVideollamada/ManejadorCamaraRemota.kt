@@ -120,7 +120,9 @@ class ManejadorCamaraRemota
         },constraints)
     }
 
-    fun onRemoteSessionReceived(){}
+    fun onRemoteSessionReceived(sessionDescription: SessionDescription){
+        peerConnection?.setRemoteDescription(EscuchadorSdpObserver(),sessionDescription)
+    }
 
     fun addIceCandidate(){}
 
