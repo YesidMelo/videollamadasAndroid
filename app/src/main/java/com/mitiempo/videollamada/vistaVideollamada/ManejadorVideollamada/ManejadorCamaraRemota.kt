@@ -104,7 +104,21 @@ class ManejadorCamaraRemota
         }, constraints)
     }
 
-    fun answers(){}
+    fun answers(escuchadorSdp: EscuchadorSdpObserver)= peerConnection?.answer(escuchadorSdp)
+
+    private fun PeerConnection.answer(escuchadorSdp: EscuchadorSdpObserver){
+
+        val constraints = MediaConstraints().apply {
+            mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
+        }
+
+        createAnswer(object : SdpObserver by escuchadorSdp{
+            override fun onCreateSuccess(desc: SessionDescription?) {
+                setLocalDescription(EscuchadorSdpObserver(),desc)
+                escuchadorSdp.onCreateSuccess(desc)
+            }
+        },constraints)
+    }
 
     fun onRemoteSessionReceived(){}
 
