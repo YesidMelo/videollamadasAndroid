@@ -116,9 +116,9 @@ class Videollamada @JvmOverloads constructor(
     }
 
 
-    private var manejador = SocketVideollamada(urlVideollamada)
+    private var manejadorSocket = SocketVideollamada(urlVideollamada)
     private fun inicializarSocketVideollamada(){
-        manejador
+        manejadorSocket
             .conEscuchadorFalla { titulo, mensaje ->
 
             }
@@ -174,8 +174,9 @@ class Videollamada @JvmOverloads constructor(
         escuchadorSdpObserver
             .conEscuchadorOnCreateSuccess {
                 val sesionDescription = it
-                Log.e("asd","");
+                manejadorSocket.enviarSdp(sesionDescription!!)
             }
+
     }
 
     private fun ponerEscuchadoresManejadorVideollamada(){
