@@ -8,7 +8,7 @@
 
     <ImageView
         android:id="@+id/boton_videollamada"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="@dimen/dimen_50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/boton_colgar"
@@ -18,7 +18,7 @@
 
     <ImageView
         android:id="@+id/boton_colgar"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="@dimen/dimen_50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/boton_microfono"
@@ -28,7 +28,7 @@
 
     <ImageView
         android:id="@+id/boton_microfono"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="@dimen/dimen_50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
