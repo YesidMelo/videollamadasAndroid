@@ -22,7 +22,7 @@ class Videollamada @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyle, defStyleRes) {
 
-    private var room : String ?= null
+    private var room : String = "usuario_1_usuario2"
     fun conRoom(room : String) : Videollamada{
         this.room = room
         return this
@@ -135,10 +135,8 @@ class Videollamada @JvmOverloads constructor(
     }
 
     private var manejadorCamaraRemota : ManejadorCamaraRemota ?= null
-    private val escuchadorPeerConnectionObserver  = EscuchadorPeerConnectionObserver()
-
     private fun iniciarCapturaCamaraRemota(){
-
+        configurarEscuchadorPeerConnectionObserver()
         configurarEscuchadorSdpObserver()
 
         if(manejadorCamaraRemota == null ){
@@ -149,7 +147,7 @@ class Videollamada @JvmOverloads constructor(
                 )
         }
 
-//        manejadorCamaraRemota?.initSurfaceView(camara_remota)
+        manejadorCamaraRemota?.initSurfaceView(camara_remota)
         manejadorCamaraRemota?.initSurfaceView(camara_local)
         manejadorCamaraRemota?.iniciarVideoCaptura(camara_local)
 
@@ -157,6 +155,19 @@ class Videollamada @JvmOverloads constructor(
 
 
     }
+
+    private val escuchadorPeerConnectionObserver  = EscuchadorPeerConnectionObserver()
+    private fun configurarEscuchadorPeerConnectionObserver(){
+        escuchadorPeerConnectionObserver
+            .conEscuchadorOnIceCandidate{
+
+            }
+            .conEscuchadorOnAddStream {
+
+            }
+    }
+
+
     private val escuchadorSdpObserver = EscuchadorSdpObserver()
     private fun configurarEscuchadorSdpObserver(){
         escuchadorSdpObserver
