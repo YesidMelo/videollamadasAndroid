@@ -70,7 +70,7 @@ class Videollamada @JvmOverloads constructor(
             verificarPermisosCamara()
             verificarPermisosMicrofono()
             inicializarSocketVideollamada()
-            iniciarCapturaCamaraLocal()
+//            iniciarCapturaCamaraLocal()
             iniciarCapturaCamaraRemota()
 
         }
@@ -136,7 +136,7 @@ class Videollamada @JvmOverloads constructor(
     private val escuchadorPeerConnectionObserver  = EscuchadorPeerConnectionObserver()
     private fun iniciarCapturaCamaraRemota(){
         if(manejadorCamaraRemota == null ){
-            manejadorCamaraRemota = ManejadorCamaraRemota(context,camara_remota,escuchadorPeerConnectionObserver)
+            manejadorCamaraRemota = ManejadorCamaraRemota(context,escuchadorPeerConnectionObserver)
         }
     }
 
