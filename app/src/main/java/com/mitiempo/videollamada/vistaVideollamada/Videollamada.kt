@@ -8,7 +8,9 @@ import com.mitiempo.videollamada.R
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosCamara
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosMicrofono
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraLocal
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraRemota
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.SocketVideollamada
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.EscuchadorPeerConnectionObserver
 import kotlinx.android.synthetic.main.visualizador_vista_videollamada.view.*
 
 class Videollamada @JvmOverloads constructor(
@@ -64,10 +66,13 @@ class Videollamada @JvmOverloads constructor(
 
     fun iniciarVista() : Videollamada{
         post {
+
             verificarPermisosCamara()
             verificarPermisosMicrofono()
             inicializarSocketVideollamada()
             iniciarCapturaCamaraLocal()
+            iniciarCapturaCamaraRemota()
+
         }
         return this
     }
@@ -127,7 +132,13 @@ class Videollamada @JvmOverloads constructor(
             ?.iniciarVideoCaptura()
     }
 
-
+    private var manejadorCamaraRemota : ManejadorCamaraRemota ?= null
+    private val escuchadorPeerConnectionObserver  = EscuchadorPeerConnectionObserver()
+    private fun iniciarCapturaCamaraRemota(){
+        if(manejadorCamaraRemota == null ){
+            manejadorCamaraRemota = ManejadorCamaraRemota(context,camara_remota,escuchadorPeerConnectionObserver)
+        }
+    }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.visualizador_vista_videollamada,this,true)
