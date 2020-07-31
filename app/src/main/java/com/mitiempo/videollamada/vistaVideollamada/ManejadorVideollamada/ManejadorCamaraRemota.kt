@@ -124,6 +124,8 @@ class ManejadorCamaraRemota
         peerConnection?.setRemoteDescription(EscuchadorSdpObserver(),sessionDescription)
     }
 
-    fun addIceCandidate(){}
+    fun addIceCandidate(iceCandidate: IceCandidate?){
+        peerConnection?.addIceCandidate(iceCandidate)
+    }
 
 }
