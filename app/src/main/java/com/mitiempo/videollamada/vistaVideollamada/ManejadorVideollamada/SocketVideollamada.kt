@@ -5,8 +5,8 @@ import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import com.mitiempo.videollamada.R
+import org.json.JSONArray
 import org.json.JSONObject
-import org.webrtc.SessionDescription
 
 class SocketVideollamada(
     private val url : String
@@ -67,8 +67,6 @@ class SocketVideollamada(
 
 
             adicionarEscuchadores()
-            unirseVideollamada()
-
 
         } catch (e: Exception) {
             Log.e(T, "", e);
@@ -89,17 +87,11 @@ class SocketVideollamada(
             ?.on(ServiciosSocket.connect.traerNombreServicios(), object : Emitter.Listener {
 
                 override fun call(vararg args: Any?) {
-                    suscribirseAVideollamada()
+                    crearRoomParaVideollamada()
                 }
 
             })
-            ?.on(ServiciosSocket.ice_candidates.traerNombreServicios(), object : Emitter.Listener {
 
-                override fun call(vararg args: Any?) {
-                    Log.e(T, "escuchador ice candidate");
-                }
-
-            })
             ?.on(ServiciosSocket.chat.traerNombreServicios(), object : Emitter.Listener {
 
                 override fun call(vararg args: Any?) {
@@ -110,54 +102,26 @@ class SocketVideollamada(
 
     }
 
-    private val listaPcs = emptyList<String>().toMutableList()
-    private fun suscribirseAVideollamada(){
+    private var to = ""
+    private var sender = ""
+    private fun crearRoomParaVideollamada(){
 
         val jsonAEnviar = "{ \"room\" : \"${this.room}\", \"socketId\" : \"${socket?.id()}\" }"
+        sender = socket?.id()!!
+        socket?.emit(ServiciosSocket.subscribe.traerNombreServicios(),jsonAEnviar)
+        socket?.on(ServiciosSocket.new_user.traerNombreServicios()){
+            args ->
 
-        socket?.emit(ServiciosSocket.subscribe.traerNombreServicios(), jsonAEnviar)
+            val sockets = (args[0] as JSONObject)["sockets"] as JSONArray
 
-        socket?.on(ServiciosSocket.new_user.traerNombreServicios()) {
-                args ->
-
-            val objetoEntrada = args[0] as JSONObject
-            val json = "{ \"to\" : \"${objetoEntrada["socketId"]}\",\"sender\"  : \"${socket?.id()}\"}"
-            listaPcs.add(objetoEntrada["socketId"].toString())
-            Log.e(T," socketEntrada : ${objetoEntrada["socketId"]}, socketEnviado : ${socket?.id()}");
-
-
-            socket?.emit(ServiciosSocket.newUserStart.traerNombreServicios(),json)
-            socket?.on(ServiciosSocket.newUserStart.traerNombreServicios()){
-                args ->
-                listaPcs.add((args[0] as JSONObject)["sender"].toString())
-                Log.e(T,"llego hasta aqui ${args[0] as JSONObject}");
+            for(contador in 0 until sockets.length()){
+                if (sockets.getString(contador) == sender){ continue }
+                to = sockets.getString(contador)
             }
 
+            Log.e(T," socketID : ${socket?.id()}, sender : ${sender}, to : ${to}");
         }
-    }
 
-
-    private fun unirseVideollamada(){
-        try {
-            socket?.emit(ServiciosSocket.connection.traerNombreServicios(),"Yesid")
-        }catch (e : Exception){
-
-        }
-    }
-
-    fun enviarSdp(sdp : SessionDescription) {
-
-        val description = sdp.description.replace("\r","\\r").replace("\n","\\n")
-        val jsonAEnviar ="{\"to\": \"\" ,\"description\" : \"${description}\", \"sender\" : \"${socket?.id()}\"}"
-
-        socket?.emit(ServiciosSocket.sdp.traerNombreServicios(), jsonAEnviar)
-        socket?.on(ServiciosSocket.sdp.traerNombreServicios(), object : Emitter.Listener {
-
-                override fun call(vararg args: Any?) {
-                    Log.e(T, "escuchador sdp");
-                }
-
-            })
     }
 
 
