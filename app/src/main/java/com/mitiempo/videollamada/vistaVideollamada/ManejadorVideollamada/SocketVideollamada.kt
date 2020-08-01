@@ -7,6 +7,7 @@ import com.github.nkzawa.socketio.client.Socket
 import com.mitiempo.videollamada.R
 import org.json.JSONArray
 import org.json.JSONObject
+import org.webrtc.SessionDescription
 
 class SocketVideollamada(
     private val url : String
@@ -120,7 +121,34 @@ class SocketVideollamada(
             }
 
             Log.e(T," socketID : ${socket?.id()}, sender : ${sender}, to : ${to}");
+            val jsonSender = "{ \"to\" : \"${to}\" , \"sender\" : \"${sender}\"}"
         }
+
+        socket?.on(ServiciosSocket.newUserStart.traerNombreServicios()){
+            args ->
+            val objetoJson = args[0] as JSONObject
+            to = objetoJson["sender"].toString()
+        }
+
+    }
+
+    fun enviarSdpARoom(sessionDescription: SessionDescription){
+        val description = sessionDescription.description.replace("\r","\\r").replace("\n","\\n")
+
+        var jsonAEnviar = "{"
+        jsonAEnviar+= "\"to\" : \"${to}\","
+        jsonAEnviar+= "\"sender\" : \"${sender}\","
+        jsonAEnviar+= "\"description\" : \"${description}\""
+        jsonAEnviar+= "}"
+
+
+        socket?.emit(ServiciosSocket.sdp.traerNombreServicios(),jsonAEnviar)
+        socket?.on(ServiciosSocket.sdp.traerNombreServicios()){
+            args ->
+            val objetoJson = args[0] as JSONObject
+            Log.e(T,"objeto recibido : ${objetoJson}")
+        }
+
 
     }
 

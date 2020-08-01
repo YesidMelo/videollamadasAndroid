@@ -173,6 +173,7 @@ class Videollamada @JvmOverloads constructor(
         escuchadorSdpObserver
             .conEscuchadorOnCreateSuccess {
                 val sesionDescription = it
+                manejadorSocket.enviarSdpARoom(it!!)
             }
 
     }
