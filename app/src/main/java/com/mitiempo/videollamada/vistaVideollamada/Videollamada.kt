@@ -2,16 +2,15 @@ package com.mitiempo.videollamada.vistaVideollamada
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.mitiempo.videollamada.R
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosCamara
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosMicrofono
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraLocal
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraRemota
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraRemota1
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.SocketVideollamada
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.EscuchadorPeerConnectionObserver
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.EscuchadorSdpObserver
 import kotlinx.android.synthetic.main.visualizador_vista_videollamada.view.*
 
 class Videollamada @JvmOverloads constructor(
@@ -30,6 +29,12 @@ class Videollamada @JvmOverloads constructor(
     private var urlVideollamada : String = "http://192.168.0.3:3000"
     fun conURLVideollamada(urlVideollamada : String ) : Videollamada{
         this.urlVideollamada = urlVideollamada
+        return this
+    }
+
+    private var servidorIceCandidate : String = "stun:stun.l.google.com:19302"
+    fun conRutaIceCandidate (servidorIceCandidate : String) : Videollamada{
+        this.servidorIceCandidate = servidorIceCandidate
         return this
     }
 
@@ -72,7 +77,8 @@ class Videollamada @JvmOverloads constructor(
             verificarPermisosCamara()
             verificarPermisosMicrofono()
             inicializarSocketVideollamada()
-            iniciarCapturaCamaraLocal()
+//            iniciarCapturaCamaraLocal()
+            iniciarCapturaCamaraRemota()
 
         }
         return this
@@ -125,7 +131,24 @@ class Videollamada @JvmOverloads constructor(
         }
 
         manejadorCamaraLocal
+            ?.conEscuchadorMediaStreamCamaraLocal {
+                Log.e("Escuchador","Media stream local :)");
+            }
             ?.iniciarVideoCaptura()
+    }
+
+    private var manejadorCamaraRemota : ManejadorCamaraRemota1 ?= null
+    private fun iniciarCapturaCamaraRemota(){
+        if(manejadorCamaraRemota == null ){
+            manejadorCamaraRemota = ManejadorCamaraRemota1(context,camara_remota,servidorIceCandidate)
+        }
+
+        manejadorCamaraRemota
+            ?.conEscuchadorMediaStreamCamaraRemota {
+
+            }
+            ?.iniciarVideoCaptura()
+
     }
 
 
