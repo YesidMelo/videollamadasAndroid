@@ -68,31 +68,32 @@ class Videollamada @JvmOverloads constructor(
     fun iniciarVista() : Videollamada{
         post {
 
+            ponerEscuchadoresManejadorVideollamada()
             verificarPermisosCamara()
             verificarPermisosMicrofono()
             inicializarSocketVideollamada()
-//            iniciarCapturaCamaraLocal()
-            iniciarCapturaCamaraRemota()
-            ponerEscuchadoresManejadorVideollamada()
+            iniciarCapturaCamaraLocal()
 
         }
         return this
+    }
+
+    private fun ponerEscuchadoresManejadorVideollamada(){
+
+        menuManejadorVideollamada
+            .conEscuchadorLlamar {}
+            .conEscuchadorColgar {}
+            .conEscuchadorMicrofono {}
+
     }
 
     private fun verificarPermisosCamara(){
         ManejadorPermisosCamara
             .getInstancia()
             .conContexto(context)
-            .conEscuchadorRespuestaPositivaDialogo {
-
-            }
-            .conEscuhadorRespuestaNegativaDialogo {
-
-            }
-            .conEscuchadorMensajeSolicitarPermisos{
-                titulo,mensaje,respuestaPositiva,respuestaNegativa ->
-                respuestaPositiva?.invoke()
-            }
+            .conEscuchadorRespuestaPositivaDialogo {}
+            .conEscuhadorRespuestaNegativaDialogo {}
+            .conEscuchadorMensajeSolicitarPermisos{ titulo,mensaje,respuestaPositiva,respuestaNegativa -> respuestaPositiva?.invoke() }
             .verificarPermisos()
 
     }
@@ -101,16 +102,9 @@ class Videollamada @JvmOverloads constructor(
         ManejadorPermisosMicrofono
             .getInstancia()
             .conContexto(context)
-            .conEscuchadorRespuestaPositivaDialogo {
-
-            }
-            .conEscuhadorRespuestaNegativaDialogo {
-
-            }
-            .conEscuchadorMensajeSolicitarPermisos{
-                    titulo,mensaje,respuestaPositiva,respuestaNegativa ->
-                respuestaPositiva?.invoke()
-            }
+            .conEscuchadorRespuestaPositivaDialogo {}
+            .conEscuhadorRespuestaNegativaDialogo {}
+            .conEscuchadorMensajeSolicitarPermisos{titulo,mensaje,respuestaPositiva,respuestaNegativa ->respuestaPositiva?.invoke()}
             .verificarPermisos()
     }
 
@@ -118,16 +112,9 @@ class Videollamada @JvmOverloads constructor(
     private var manejadorSocket = SocketVideollamada(urlVideollamada)
     private fun inicializarSocketVideollamada(){
         manejadorSocket
-            .conEscuchadorFalla { titulo, mensaje ->
-
-            }
-            .conEscuchadorSdpRemoto {
-                manejadorCamaraRemota?.onRemoteSessionReceived(it!!)
-                manejadorCamaraRemota?.answers(escuchadorSdpObserver)
-            }
-            .conEscuchadorIceCandidateRemoto {
-                manejadorCamaraRemota?.addIceCandidate(it)
-            }
+            .conEscuchadorFalla { titulo, mensaje -> }
+            .conEscuchadorSdpRemoto {}
+            .conEscuchadorIceCandidateRemoto {}
             .iniciarVideoLlamada()
     }
 
@@ -141,65 +128,9 @@ class Videollamada @JvmOverloads constructor(
             ?.iniciarVideoCaptura()
     }
 
-    private var manejadorCamaraRemota : ManejadorCamaraRemota ?= null
-    private fun iniciarCapturaCamaraRemota(){
-        configurarEscuchadorPeerConnectionObserver()
-        configurarEscuchadorSdpObserver()
-
-        if(manejadorCamaraRemota == null ){
-            manejadorCamaraRemota = ManejadorCamaraRemota(
-                context,
-                escuchadorPeerConnectionObserver,
-                "stun:stun.l.google.com:19302"
-                )
-        }
-
-        manejadorCamaraRemota?.initSurfaceView(camara_remota)
-        manejadorCamaraRemota?.initSurfaceView(camara_local)
-        manejadorCamaraRemota?.iniciarVideoCaptura(camara_local)
 
 
 
-
-    }
-
-    private val escuchadorPeerConnectionObserver  = EscuchadorPeerConnectionObserver()
-    private fun configurarEscuchadorPeerConnectionObserver(){
-        escuchadorPeerConnectionObserver
-            .conEscuchadorOnIceCandidate{
-                manejadorSocket.enviarOnIceCandidate(it!!)
-                manejadorCamaraRemota?.addIceCandidate(it)
-            }
-            .conEscuchadorOnAddStream {
-                it?.videoTracks?.get(0)?.addSink(camara_remota)
-            }
-    }
-
-
-    private val escuchadorSdpObserver = EscuchadorSdpObserver()
-    private fun configurarEscuchadorSdpObserver(){
-        escuchadorSdpObserver
-            .conEscuchadorOnCreateSuccess {
-                val sesionDescription = it
-                manejadorSocket.enviarSdpARoom(it!!)
-            }
-
-    }
-
-    private fun ponerEscuchadoresManejadorVideollamada(){
-
-        menuManejadorVideollamada
-            .conEscuchadorLlamar {
-                manejadorCamaraRemota?.call(escuchadorSdpObserver)
-            }
-            .conEscuchadorColgar {
-
-            }
-            .conEscuchadorMicrofono {
-
-            }
-
-    }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.visualizador_vista_videollamada,this,true)
