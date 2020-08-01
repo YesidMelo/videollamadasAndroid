@@ -1,6 +1,7 @@
 package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada
 
 import android.content.Context
+import android.util.Log
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.*
 import org.webrtc.*
 
@@ -24,11 +25,21 @@ class ManejadorVideoCamaras(
 
     private val manejadorSocket =SocketVideollamada(urlVideollamada)
     private val listaRutasIceServices = listOf(PeerConnection.IceServer.builder(rutaIceCandidate).createIceServer())
+    private val escuchadorSdpObserver = EscuchadorSdpObserver()
+        .conEscuchadorOnCreateSuccess {
+            manejadorSocket.enviarSdpARoom(it!!)
+        }
     private fun iniciarManejadorSocket(){
         manejadorSocket
             .conEscuchadorFalla { titulo, mensaje ->  }
-            .conEscuchadorSdpRemoto {  }
-            .conEscuchadorIceCandidateRemoto {  }
+            .conEscuchadorSdpRemoto {
+                Log.e("SesionDescriptionRemoto","llegue aqui");
+                peerConnectionRemoto?.setRemoteDescription(escuchadorSdpObserver,it!!)
+                peerConnectionRemoto?.answer(EscuchadorSdpObserver())
+            }
+            .conEscuchadorIceCandidateRemoto {
+                peerConnectionRemoto?.addIceCandidate(it!!)
+            }
             .iniciarVideoLlamada()
     }
 
@@ -42,6 +53,12 @@ class ManejadorVideoCamaras(
                 peerConnectionLocal = peerConnectionFactory?.createPeerConnection(
                     listaRutasIceServices,
                     EscuchadorPeerConnectionObserver()
+                        .conEscuchadorOnIceCandidate {
+                            peerConnectionLocal?.addIceCandidate(it!!)
+                        }
+                        .conEscuchadorOnAddStream {
+                            it?.videoTracks?.get(0)?.addSink(camaraLocal)
+                        }
                 )
             }
             .conEscuchadorMediaStreamCamaraLocal {
@@ -61,6 +78,12 @@ class ManejadorVideoCamaras(
                 peerConnectionRemoto = peerConnectionFactory?.createPeerConnection(
                     listaRutasIceServices,
                     EscuchadorPeerConnectionObserver()
+                        .conEscuchadorOnIceCandidate {
+                            peerConnectionRemoto?.addIceCandidate(it!!)
+                        }
+                        .conEscuchadorOnAddStream {
+                            it?.videoTracks?.get(0)?.addSink(camaraRemota)
+                        }
                 )
             }
             .conEscuchadorMediaStreamCamaraRemota {
@@ -69,7 +92,13 @@ class ManejadorVideoCamaras(
             .iniciarVideoCaptura()
     }
 
-    fun llamar(){}
+    fun llamar(){
+
+        peerConnectionRemoto?.call(EscuchadorSdpObserver())
+
+        peerConnectionLocal?.call(escuchadorSdpObserver)
+
+    }
 
     private fun PeerConnection.call(sdpObserver: EscuchadorSdpObserver){
 
@@ -77,9 +106,20 @@ class ManejadorVideoCamaras(
         createOffer(object : SdpObserver by sdpObserver{
             override fun onCreateSuccess(desc: SessionDescription?) {
                 setLocalDescription(EscuchadorSdpObserver(),desc)
+                sdpObserver.onCreateSuccess(desc)
             }
         },constraints)
 
+    }
+
+    private fun PeerConnection.answer(sdpObserver: EscuchadorSdpObserver){
+        val constraints = MediaConstraints().apply { mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")) }
+        createAnswer(object : SdpObserver by sdpObserver{
+            override fun onCreateSuccess(desc: SessionDescription?) {
+                setLocalDescription(EscuchadorSdpObserver(),desc)
+                sdpObserver.onCreateSuccess(desc)
+            }
+        },constraints)
     }
 
     fun microfono(){}
