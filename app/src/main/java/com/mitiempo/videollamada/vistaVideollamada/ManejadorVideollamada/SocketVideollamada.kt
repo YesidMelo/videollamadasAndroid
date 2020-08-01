@@ -122,12 +122,14 @@ class SocketVideollamada(
 
             Log.e(T," socketID : ${socket?.id()}, sender : ${sender}, to : ${to}");
             val jsonSender = "{ \"to\" : \"${to}\" , \"sender\" : \"${sender}\"}"
+            socket?.emit(ServiciosSocket.newUserStart.traerNombreServicios(),jsonSender)
         }
 
         socket?.on(ServiciosSocket.newUserStart.traerNombreServicios()){
             args ->
             val objetoJson = args[0] as JSONObject
             to = objetoJson["sender"].toString()
+
         }
 
     }
@@ -146,6 +148,7 @@ class SocketVideollamada(
         socket?.on(ServiciosSocket.sdp.traerNombreServicios()){
             args ->
             val objetoJson = args[0] as JSONObject
+            val tmp = objetoJson
             Log.e(T,"objeto recibido : ${objetoJson}")
         }
 
