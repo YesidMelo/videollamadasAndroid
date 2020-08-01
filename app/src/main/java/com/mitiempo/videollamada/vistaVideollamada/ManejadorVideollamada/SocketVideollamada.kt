@@ -147,9 +147,13 @@ class SocketVideollamada(
         socket?.emit(ServiciosSocket.sdp.traerNombreServicios(),jsonAEnviar)
         socket?.on(ServiciosSocket.sdp.traerNombreServicios()){
             args ->
-            val objetoJson = args[0] as JSONObject
-            val tmp = objetoJson
-            Log.e(T,"objeto recibido : ${objetoJson}")
+            Thread {
+
+                val objetoJson = args[0] as JSONObject
+                val descripcionRemota = objetoJson["description"]
+                Log.e(T,"objeto recibido : ${descripcionRemota}")
+
+            }.start()
         }
 
 
