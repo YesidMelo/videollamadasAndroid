@@ -125,7 +125,6 @@ class ManejadorCamaraRemota
     }
 
     fun addIceCandidate(iceCandidate: IceCandidate?){
-        peerConnection?.addIceCandidate(iceCandidate)
-    }
+        peerConnection?.addIceCandidate(iceCandidate) }
 
 }

@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.mitiempo.videollamada.R
 import org.json.JSONArray
 import org.json.JSONObject
+import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
 
 class SocketVideollamada(
@@ -137,8 +138,10 @@ class SocketVideollamada(
 
     private var escuchadorSdpRemoto : ((SessionDescription?)->Unit) ?= null
     fun conEscuchadorSdpRemoto(escuchadorSdpRemoto : ((SessionDescription?)->Unit)) : SocketVideollamada{
+        this.escuchadorSdpRemoto = escuchadorSdpRemoto
         return this
     }
+
     fun enviarSdpARoom(sessionDescription: SessionDescription){
 //        val description = sessionDescription.description.replace("\r","\\r").replace("\n","\\n")
         val mySessionDescription = SessionDescription(sessionDescription.type,sessionDescription.description.replace("\r","\\r").replace("\n","\\n"))
@@ -167,6 +170,10 @@ class SocketVideollamada(
             }.start()
         }
 
+
+    }
+
+    fun enviarOnIceCandidate(iceCandidate: IceCandidate){
 
     }
 

@@ -122,6 +122,9 @@ class Videollamada @JvmOverloads constructor(
             .conEscuchadorFalla { titulo, mensaje ->
 
             }
+            .conEscuchadorSdpRemoto {
+                manejadorCamaraRemota?.onRemoteSessionReceived(it!!)
+            }
             .iniciarVideoLlamada()
     }
 
@@ -161,6 +164,8 @@ class Videollamada @JvmOverloads constructor(
     private fun configurarEscuchadorPeerConnectionObserver(){
         escuchadorPeerConnectionObserver
             .conEscuchadorOnIceCandidate{
+                manejadorSocket.enviarOnIceCandidate(it!!)
+                manejadorCamaraRemota?.addIceCandidate(it)
             }
             .conEscuchadorOnAddStream {
                 it?.videoTracks?.get(0)?.addSink(camara_remota)
