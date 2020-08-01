@@ -64,7 +64,6 @@ class ManejadorCamaraLocal(
 
     fun iniciarVideoCaptura(){
         videoLocal.post {
-
             val surfaceTextureHelper = SurfaceTextureHelper.create(Thread.currentThread().name,rootEglBase.eglBaseContext)
             (videoCapturer as VideoCapturer).initialize(surfaceTextureHelper,videoLocal.context,localVideoSource.capturerObserver)
             videoCapturer.startCapture(320,240,60)
@@ -76,13 +75,22 @@ class ManejadorCamaraLocal(
             localStream.addTrack(localVideoTrack)
 
             escuchadorMediaStreamCamaraLocal?.invoke(localStream)
+            escuchadorPeerConnectionFactory?.invoke(peerConnectionFactory)
         }
     }
+
 
     private var escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit) ?= null
     fun conEscuchadorMediaStreamCamaraLocal(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraLocal {
         this.escuchadorMediaStreamCamaraLocal = escuchadorMediaStreamCamaraLocal
         return this
     }
+
+    private var escuchadorPeerConnectionFactory : ((PeerConnectionFactory?)->Unit) ?=null
+    fun conEscuchadorPeerConnectionFactory(escuchadorPeerConnectionFactory : ((PeerConnectionFactory?)->Unit)) : ManejadorCamaraLocal{
+        this.escuchadorPeerConnectionFactory = escuchadorPeerConnectionFactory
+        return this
+    }
+
 
 }

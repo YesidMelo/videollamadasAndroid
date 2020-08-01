@@ -78,12 +78,19 @@ class ManejadorCamaraRemota1
             localStream.addTrack(localVideoTrack)
 
             escuchadorMediaStreamCamaraLocal?.invoke(localStream)
+            escuchadorPeerConnectionFactory?.invoke(peerConnectionFactory)
         }
     }
 
     private var escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit) ?= null
     fun conEscuchadorMediaStreamCamaraRemota(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraRemota1 {
         this.escuchadorMediaStreamCamaraLocal = escuchadorMediaStreamCamaraLocal
+        return this
+    }
+
+    private var escuchadorPeerConnectionFactory : ((PeerConnectionFactory?)->Unit)?= null
+    fun conEscuchadorPeerConnectionFactory(escuchadorPeerConnectionFactory : ((PeerConnectionFactory?)->Unit)) : ManejadorCamaraRemota1{
+        this.escuchadorPeerConnectionFactory = escuchadorPeerConnectionFactory
         return this
     }
 
