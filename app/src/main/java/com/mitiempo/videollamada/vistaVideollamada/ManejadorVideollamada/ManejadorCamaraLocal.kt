@@ -12,6 +12,7 @@ class ManejadorCamaraLocal(
 
     companion object{
         private const val LOCAL_TRACK_ID = "local_track"
+        private const val LOCAL_SREAM_ID = "local_track"
     }
 
     private val rootEglBase = EglBase.create()
@@ -70,7 +71,18 @@ class ManejadorCamaraLocal(
 
             val localVideoTrack = peerConnectionFactory.createVideoTrack(LOCAL_TRACK_ID,localVideoSource)
             localVideoTrack.addSink(videoLocal)
+
+            val localStream = peerConnectionFactory.createLocalMediaStream(LOCAL_SREAM_ID)
+            localStream.addTrack(localVideoTrack)
+
+            escuchadorMediaStreamCamaraLocal?.invoke(localStream)
         }
+    }
+
+    private var escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit) ?= null
+    fun conEscuchadorMediaStreamCamaraLocal(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraLocal{
+        this.escuchadorMediaStreamCamaraLocal = escuchadorMediaStreamCamaraLocal
+        return this
     }
 
 }
