@@ -173,7 +173,31 @@ class SocketVideollamada(
 
     }
 
+    private var escuchadorIceCandidateRemoto : ((IceCandidate?)->Unit)?= null
+    fun conEscuchadorIceCandidateRemoto(escuchadorIceCandidateRemoto : ((IceCandidate?)->Unit)) : SocketVideollamada{
+        this.escuchadorIceCandidateRemoto = escuchadorIceCandidateRemoto
+        return this
+    }
+
     fun enviarOnIceCandidate(iceCandidate: IceCandidate){
+
+        var jsonAEnviar = "{"
+        jsonAEnviar+="\"to\" : \"${to}\", "
+        jsonAEnviar+="\"candidate\" : ${Gson().toJson(iceCandidate)},"
+        jsonAEnviar+=" \"sender\" : \"${sender}\" "
+        jsonAEnviar+="}"
+
+        socket?.emit(ServiciosSocket.ice_candidates.traerNombreServicios(),jsonAEnviar)
+        socket?.on(ServiciosSocket.ice_candidates.traerNombreServicios()){
+            args ->
+
+            Thread {
+                val objetoJson = args[0] as JSONObject
+                val iceCandidateRemoto = Gson().fromJson(objetoJson["candidate"].toString(),IceCandidate::class.java)
+                escuchadorIceCandidateRemoto?.invoke(iceCandidateRemoto)
+            }.start()
+
+        }
 
     }
 

@@ -2,7 +2,6 @@ package com.mitiempo.videollamada.vistaVideollamada
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.mitiempo.videollamada.R
@@ -124,6 +123,9 @@ class Videollamada @JvmOverloads constructor(
             }
             .conEscuchadorSdpRemoto {
                 manejadorCamaraRemota?.onRemoteSessionReceived(it!!)
+            }
+            .conEscuchadorIceCandidateRemoto {
+                manejadorCamaraRemota?.addIceCandidate(it)
             }
             .iniciarVideoLlamada()
     }
