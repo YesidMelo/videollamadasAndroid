@@ -45,15 +45,15 @@ class ManejadorVideoCamaras(
     private var peerConnectionLocal : PeerConnection ?= null
     private fun iniciarManejadorCamaraLocal(){
         manejadaorCamaraLocal
-            .conEscuchadorMediaStreamCamaraLocal {
-
-            }
             .conEscuchadorPeerConnectionFactory {
                 peerConnectionFactory ->
                 peerConnectionLocal = peerConnectionFactory?.createPeerConnection(
                     listaRutasIceServices,
                     EscuchadorPeerConnectionObserver()
                 )
+            }
+            .conEscuchadorMediaStreamCamaraLocal {
+                peerConnectionLocal?.addStream(it)
             }
             .iniciarVideoCaptura()
     }
@@ -62,15 +62,15 @@ class ManejadorVideoCamaras(
     private var peerConnectionRemoto : PeerConnection ?= null
     private fun iniciarManejadorCamaraRemota(){
         manejadorCamaraRemota1
-            .conEscuchadorMediaStreamCamaraRemota {
-
-            }
             .conEscuchadorPeerConnectionFactory {
                 peerConnectionFactory ->
                 peerConnectionRemoto = peerConnectionFactory?.createPeerConnection(
                     listaRutasIceServices,
                     EscuchadorPeerConnectionObserver()
                 )
+            }
+            .conEscuchadorMediaStreamCamaraRemota {
+                peerConnectionRemoto?.addStream(it)
             }
             .iniciarVideoCaptura()
     }
