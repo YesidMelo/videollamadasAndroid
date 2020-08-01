@@ -123,6 +123,7 @@ class Videollamada @JvmOverloads constructor(
             }
             .conEscuchadorSdpRemoto {
                 manejadorCamaraRemota?.onRemoteSessionReceived(it!!)
+                manejadorCamaraRemota?.answers(escuchadorSdpObserver)
             }
             .conEscuchadorIceCandidateRemoto {
                 manejadorCamaraRemota?.addIceCandidate(it)

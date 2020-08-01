@@ -61,7 +61,6 @@ class SocketVideollamada(
         if (socket != null) {
             return
         }
-        Log.e(T, "la url es : ${url}");
 
         try {
 
@@ -143,7 +142,6 @@ class SocketVideollamada(
     }
 
     fun enviarSdpARoom(sessionDescription: SessionDescription){
-//        val description = sessionDescription.description.replace("\r","\\r").replace("\n","\\n")
         val mySessionDescription = SessionDescription(sessionDescription.type,sessionDescription.description.replace("\r","\\r").replace("\n","\\n"))
         val description = Gson().toJson(mySessionDescription)
 
@@ -165,7 +163,7 @@ class SocketVideollamada(
 
                 val descripcionDellegada = sessionDescription.description.replace("\\r","\r").replace("\\n","\n")
                 escuchadorSdpRemoto?.invoke(SessionDescription(sessionDescriptionLlegada.type,descripcionDellegada))
-                Log.e(T,"objeto recibido : ${descripcionRemota}")
+
 
             }.start()
         }
