@@ -8,9 +8,10 @@ import android.widget.LinearLayout
 import com.mitiempo.videollamada.R
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosCamara
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorPermisos.ManejadorPermisosMicrofono
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraLocal
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorCamaraRemota1
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.SocketVideollamada
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.ManejadorVideoCamaras
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.ManejadorCamaraLocal
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.ManejadorCamaraRemota1
+import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.SocketVideollamada
 import kotlinx.android.synthetic.main.visualizador_vista_videollamada.view.*
 
 class Videollamada @JvmOverloads constructor(
@@ -76,9 +77,7 @@ class Videollamada @JvmOverloads constructor(
             ponerEscuchadoresManejadorVideollamada()
             verificarPermisosCamara()
             verificarPermisosMicrofono()
-            inicializarSocketVideollamada()
-//            iniciarCapturaCamaraLocal()
-            iniciarCapturaCamaraRemota()
+            iniciaManejadorVideocamaras()
 
         }
         return this
@@ -114,45 +113,22 @@ class Videollamada @JvmOverloads constructor(
             .verificarPermisos()
     }
 
-
-    private var manejadorSocket = SocketVideollamada(urlVideollamada)
-    private fun inicializarSocketVideollamada(){
-        manejadorSocket
-            .conEscuchadorFalla { titulo, mensaje -> }
-            .conEscuchadorSdpRemoto {}
-            .conEscuchadorIceCandidateRemoto {}
-            .iniciarVideoLlamada()
-    }
-
-    private var manejadorCamaraLocal : ManejadorCamaraLocal ?= null
-    private fun iniciarCapturaCamaraLocal(){
-        if(manejadorCamaraLocal == null ){
-            manejadorCamaraLocal = ManejadorCamaraLocal(context,camara_local)
+    private var manejadorVideoCamaras : ManejadorVideoCamaras ?= null
+    fun iniciaManejadorVideocamaras(){
+        if(manejadorVideoCamaras == null ){
+            manejadorVideoCamaras = ManejadorVideoCamaras(
+                context,
+                camara_local,
+                camara_remota,
+                servidorIceCandidate,
+                urlVideollamada,
+                room
+            )
         }
 
-        manejadorCamaraLocal
-            ?.conEscuchadorMediaStreamCamaraLocal {
-                Log.e("Escuchador","Media stream local :)");
-            }
-            ?.iniciarVideoCaptura()
+        manejadorVideoCamaras
+            ?.iniciarCapturaVideollamada()
     }
-
-    private var manejadorCamaraRemota : ManejadorCamaraRemota1 ?= null
-    private fun iniciarCapturaCamaraRemota(){
-        if(manejadorCamaraRemota == null ){
-            manejadorCamaraRemota = ManejadorCamaraRemota1(context,camara_remota,servidorIceCandidate)
-        }
-
-        manejadorCamaraRemota
-            ?.conEscuchadorMediaStreamCamaraRemota {
-
-            }
-            ?.iniciarVideoCaptura()
-
-    }
-
-
-
 
 
     init {

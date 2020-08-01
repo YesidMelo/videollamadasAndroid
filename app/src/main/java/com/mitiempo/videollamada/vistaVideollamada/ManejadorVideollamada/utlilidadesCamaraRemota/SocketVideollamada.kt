@@ -1,4 +1,4 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada
+package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import android.util.Log
 import com.github.nkzawa.emitter.Emitter
@@ -34,7 +34,7 @@ class SocketVideollamada(
     }
 
     private var room : String = "usuario1_usuario2"
-    fun conRoom(room : String) : SocketVideollamada{
+    fun conRoom(room : String) : SocketVideollamada {
         this.room = room
         return this
     }
@@ -136,7 +136,7 @@ class SocketVideollamada(
     }
 
     private var escuchadorSdpRemoto : ((SessionDescription?)->Unit) ?= null
-    fun conEscuchadorSdpRemoto(escuchadorSdpRemoto : ((SessionDescription?)->Unit)) : SocketVideollamada{
+    fun conEscuchadorSdpRemoto(escuchadorSdpRemoto : ((SessionDescription?)->Unit)) : SocketVideollamada {
         this.escuchadorSdpRemoto = escuchadorSdpRemoto
         return this
     }
@@ -172,7 +172,7 @@ class SocketVideollamada(
     }
 
     private var escuchadorIceCandidateRemoto : ((IceCandidate?)->Unit)?= null
-    fun conEscuchadorIceCandidateRemoto(escuchadorIceCandidateRemoto : ((IceCandidate?)->Unit)) : SocketVideollamada{
+    fun conEscuchadorIceCandidateRemoto(escuchadorIceCandidateRemoto : ((IceCandidate?)->Unit)) : SocketVideollamada {
         this.escuchadorIceCandidateRemoto = escuchadorIceCandidateRemoto
         return this
     }

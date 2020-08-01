@@ -1,4 +1,4 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada
+package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import android.content.Context
 import org.webrtc.*
@@ -80,7 +80,7 @@ class ManejadorCamaraLocal(
     }
 
     private var escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit) ?= null
-    fun conEscuchadorMediaStreamCamaraLocal(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraLocal{
+    fun conEscuchadorMediaStreamCamaraLocal(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraLocal {
         this.escuchadorMediaStreamCamaraLocal = escuchadorMediaStreamCamaraLocal
         return this
     }

@@ -1,4 +1,4 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada
+package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import android.content.Context
 import org.webrtc.*
@@ -59,7 +59,7 @@ class ManejadorCamaraRemota1
     }
 
     private fun inicializarSurfaceView(viewRenderer: SurfaceViewRenderer)  = viewRenderer.run {
-        setMirror(true)
+//        setMirror(true)
         setEnableHardwareScaler(true)
         init(rootEglBase.eglBaseContext,null)
     }
@@ -82,7 +82,7 @@ class ManejadorCamaraRemota1
     }
 
     private var escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit) ?= null
-    fun conEscuchadorMediaStreamCamaraRemota(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraRemota1{
+    fun conEscuchadorMediaStreamCamaraRemota(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraRemota1 {
         this.escuchadorMediaStreamCamaraLocal = escuchadorMediaStreamCamaraLocal
         return this
     }

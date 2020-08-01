@@ -1,8 +1,6 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada
+package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import android.content.Context
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.EscuchadorPeerConnectionObserver
-import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.EscuchadorSdpObserver
 import org.webrtc.*
 import java.lang.IllegalStateException
 
