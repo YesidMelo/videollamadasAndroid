@@ -86,9 +86,9 @@ class Videollamada @JvmOverloads constructor(
     private fun ponerEscuchadoresManejadorVideollamada(){
 
         menuManejadorVideollamada
-            .conEscuchadorLlamar {}
-            .conEscuchadorColgar {}
-            .conEscuchadorMicrofono {}
+            .conEscuchadorLlamar {manejadorVideoCamaras?.llamar()}
+            .conEscuchadorColgar {manejadorVideoCamaras?.colgar() }
+            .conEscuchadorMicrofono {manejadorVideoCamaras?.microfono()}
 
     }
 
