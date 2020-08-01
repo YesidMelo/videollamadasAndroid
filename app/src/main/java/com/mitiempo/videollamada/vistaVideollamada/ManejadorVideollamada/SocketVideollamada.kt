@@ -4,6 +4,7 @@ import android.util.Log
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
+import com.google.gson.Gson
 import com.mitiempo.videollamada.R
 import org.json.JSONArray
 import org.json.JSONObject
@@ -134,13 +135,19 @@ class SocketVideollamada(
 
     }
 
+    private var escuchadorSdpRemoto : ((SessionDescription?)->Unit) ?= null
+    fun conEscuchadorSdpRemoto(escuchadorSdpRemoto : ((SessionDescription?)->Unit)) : SocketVideollamada{
+        return this
+    }
     fun enviarSdpARoom(sessionDescription: SessionDescription){
-        val description = sessionDescription.description.replace("\r","\\r").replace("\n","\\n")
+//        val description = sessionDescription.description.replace("\r","\\r").replace("\n","\\n")
+        val mySessionDescription = SessionDescription(sessionDescription.type,sessionDescription.description.replace("\r","\\r").replace("\n","\\n"))
+        val description = Gson().toJson(mySessionDescription)
 
         var jsonAEnviar = "{"
         jsonAEnviar+= "\"to\" : \"${to}\","
         jsonAEnviar+= "\"sender\" : \"${sender}\","
-        jsonAEnviar+= "\"description\" : \"${description}\""
+        jsonAEnviar+= "\"description\" : ${description}"
         jsonAEnviar+= "}"
 
 
@@ -150,7 +157,11 @@ class SocketVideollamada(
             Thread {
 
                 val objetoJson = args[0] as JSONObject
-                val descripcionRemota = objetoJson["description"]
+                val descripcionRemota:String  = objetoJson["description"].toString()
+                val sessionDescriptionLlegada =Gson().fromJson(descripcionRemota,SessionDescription::class.java)
+
+                val descripcionDellegada = sessionDescription.description.replace("\\r","\r").replace("\\n","\n")
+                escuchadorSdpRemoto?.invoke(SessionDescription(sessionDescriptionLlegada.type,descripcionDellegada))
                 Log.e(T,"objeto recibido : ${descripcionRemota}")
 
             }.start()
