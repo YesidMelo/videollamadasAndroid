@@ -1,8 +1,9 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada
+package com.mitiempo.videollamada.vistaVideollamada.intento_1.ManejadorVideollamada
 
 import android.content.Context
 import android.util.Log
 import com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota.*
+import com.mitiempo.videollamada.vistaVideollamada.intento_1.ManejadorVideollamada.utlilidadesCamaraRemota.*
 import org.webrtc.*
 
 class ManejadorVideoCamaras(
@@ -14,7 +15,7 @@ class ManejadorVideoCamaras(
     private val room : String
 ) {
 
-    fun iniciarCapturaVideollamada() : ManejadorVideoCamaras{
+    fun iniciarCapturaVideollamada() : ManejadorVideoCamaras {
 
         iniciarManejadorSocket()
         iniciarManejadorCamaraLocal()
@@ -23,7 +24,10 @@ class ManejadorVideoCamaras(
         return this
     }
 
-    private val manejadorSocket =SocketVideollamada(urlVideollamada)
+    private val manejadorSocket =
+        SocketVideollamada(
+            urlVideollamada
+        )
     private val listaRutasIceServices = listOf(PeerConnection.IceServer.builder(rutaIceCandidate).createIceServer())
     private val escuchadorSdpObserver = EscuchadorSdpObserver()
         .conEscuchadorOnCreateSuccess {
@@ -43,7 +47,11 @@ class ManejadorVideoCamaras(
             .iniciarVideoLlamada()
     }
 
-    private val manejadaorCamaraLocal = ManejadorCamaraLocal(context,camaraLocal)
+    private val manejadaorCamaraLocal =
+        ManejadorCamaraLocal(
+            context,
+            camaraLocal
+        )
     private var peerConnectionLocal : PeerConnection ?= null
     private fun iniciarManejadorCamaraLocal(){
 
@@ -69,7 +77,12 @@ class ManejadorVideoCamaras(
     }
 
 
-    private val manejadorCamaraRemota1 = ManejadorCamaraRemota1( context, camaraRemota, rutaIceCandidate )
+    private val manejadorCamaraRemota1 =
+        ManejadorCamaraRemota1(
+            context,
+            camaraRemota,
+            rutaIceCandidate
+        )
     private var peerConnectionRemoto : PeerConnection ?= null
     private fun iniciarManejadorCamaraRemota(){
         manejadorCamaraRemota1

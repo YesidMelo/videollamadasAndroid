@@ -1,4 +1,4 @@
-package com.mitiempo.videollamada.vistaVideollamada
+package com.mitiempo.videollamada.vistaVideollamada.intento_1
 
 import android.content.Context
 import android.util.AttributeSet
@@ -15,19 +15,19 @@ class MenuManejadorVideollamada @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyle, defStyleRes) {
 
     private var EscuchadorLlamar : (()->Unit) ?= null
-    fun conEscuchadorLlamar(EscuchadorLlamar : (()->Unit)): MenuManejadorVideollamada{
+    fun conEscuchadorLlamar(EscuchadorLlamar : (()->Unit)): MenuManejadorVideollamada {
         this.EscuchadorLlamar = EscuchadorLlamar
         return this
     }
 
     private var EscuchadorColgar : (()->Unit) ?= null
-    fun conEscuchadorColgar(EscuchadorColgar : (()->Unit)): MenuManejadorVideollamada{
+    fun conEscuchadorColgar(EscuchadorColgar : (()->Unit)): MenuManejadorVideollamada {
         this.EscuchadorColgar = EscuchadorColgar
         return this
     }
 
     private var EscuchadorMicrofono : (()->Unit) ?= null
-    fun conEscuchadorMicrofono(EscuchadorMicrofono : (()->Unit)): MenuManejadorVideollamada{
+    fun conEscuchadorMicrofono(EscuchadorMicrofono : (()->Unit)): MenuManejadorVideollamada {
         this.EscuchadorMicrofono = EscuchadorMicrofono
         return this
     }

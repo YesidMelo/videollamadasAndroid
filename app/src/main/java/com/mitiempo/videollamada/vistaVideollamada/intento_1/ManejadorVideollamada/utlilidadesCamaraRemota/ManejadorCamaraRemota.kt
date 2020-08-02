@@ -1,4 +1,4 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
+package com.mitiempo.videollamada.vistaVideollamada.intento_1.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import android.content.Context
 import org.webrtc.*

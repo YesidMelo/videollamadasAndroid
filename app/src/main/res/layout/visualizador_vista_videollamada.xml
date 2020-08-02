@@ -26,7 +26,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.mitiempo.videollamada.vistaVideollamada.MenuManejadorVideollamada
+    <com.mitiempo.videollamada.vistaVideollamada.intento_1.MenuManejadorVideollamada
         android:id="@+id/menuManejadorVideollamada"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

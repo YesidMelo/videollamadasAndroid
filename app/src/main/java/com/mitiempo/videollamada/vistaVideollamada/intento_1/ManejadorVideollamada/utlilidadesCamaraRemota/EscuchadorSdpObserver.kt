@@ -1,4 +1,4 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
+package com.mitiempo.videollamada.vistaVideollamada.intento_1.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription
@@ -6,7 +6,7 @@ import org.webrtc.SessionDescription
 class EscuchadorSdpObserver : SdpObserver {
 
     private var EscuchadorOnSetFailure : ((p0: String?)->Unit) ?= null
-    fun conEscuchadorOnSetFailure(EscuchadorOnSetFailure : ((p0: String?)->Unit)): EscuchadorSdpObserver{
+    fun conEscuchadorOnSetFailure(EscuchadorOnSetFailure : ((p0: String?)->Unit)): EscuchadorSdpObserver {
         this.EscuchadorOnSetFailure = EscuchadorOnSetFailure
         return this
     }
@@ -16,7 +16,7 @@ class EscuchadorSdpObserver : SdpObserver {
 
 
     private var EscuchadorOnSetSuccess : (()->Unit) ?= null
-    fun conEscuchadorOnSetSuccess(EscuchadorOnSetSuccess : (()->Unit)): EscuchadorSdpObserver{
+    fun conEscuchadorOnSetSuccess(EscuchadorOnSetSuccess : (()->Unit)): EscuchadorSdpObserver {
         this.EscuchadorOnSetSuccess = EscuchadorOnSetSuccess
         return this
     }
@@ -26,7 +26,7 @@ class EscuchadorSdpObserver : SdpObserver {
 
 
     private var EscuchadorOnCreateSuccess : ((p0: SessionDescription?)->Unit) ?= null
-    fun conEscuchadorOnCreateSuccess(EscuchadorOnCreateSuccess : ((p0: SessionDescription?)->Unit)): EscuchadorSdpObserver{
+    fun conEscuchadorOnCreateSuccess(EscuchadorOnCreateSuccess : ((p0: SessionDescription?)->Unit)): EscuchadorSdpObserver {
         this.EscuchadorOnCreateSuccess = EscuchadorOnCreateSuccess
         return this
     }
@@ -36,7 +36,7 @@ class EscuchadorSdpObserver : SdpObserver {
 
 
     private var EscuchadorOnCreateFailure : ((p0: String?)->Unit) ?= null
-    fun conEscuchadorOnCreateFailure(EscuchadorOnCreateFailure : ((p0: String?)->Unit)): EscuchadorSdpObserver{
+    fun conEscuchadorOnCreateFailure(EscuchadorOnCreateFailure : ((p0: String?)->Unit)): EscuchadorSdpObserver {
         this.EscuchadorOnCreateFailure = EscuchadorOnCreateFailure
         return this
     }

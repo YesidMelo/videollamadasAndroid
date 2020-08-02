@@ -1,4 +1,4 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
+package com.mitiempo.videollamada.vistaVideollamada.intento_1.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import android.util.Log
 import com.github.nkzawa.emitter.Emitter

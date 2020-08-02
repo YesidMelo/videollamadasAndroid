@@ -1,14 +1,12 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
+package com.mitiempo.videollamada.vistaVideollamada.intento_1.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import android.content.Context
 import org.webrtc.*
 import java.lang.IllegalStateException
 
-class ManejadorCamaraRemota1
-    (
+class ManejadorCamaraLocal(
     private val context: Context,
-    private val camara_remota : SurfaceViewRenderer,
-    private val rutaIceServer : String = "stun:stun.l.google.com:19302"
+    private val videoLocal :SurfaceViewRenderer
 )
 {
 
@@ -20,7 +18,7 @@ class ManejadorCamaraRemota1
     private val rootEglBase = EglBase.create()
 
     private val peerConnectionFactory by lazy { buildPeerConnectionFactory() }
-    private fun buildPeerConnectionFactory() : PeerConnectionFactory {
+    private fun buildPeerConnectionFactory() : PeerConnectionFactory{
         return PeerConnectionFactory
             .builder()
             .setVideoDecoderFactory(DefaultVideoDecoderFactory(rootEglBase.eglBaseContext))
@@ -46,7 +44,7 @@ class ManejadorCamaraRemota1
 
     init {
         iniciarPeerConnectionFactory(context)
-        inicializarSurfaceView(camara_remota)
+        inicializarSurfaceView(videoLocal)
     }
 
     private fun iniciarPeerConnectionFactory(context: Context){
@@ -59,20 +57,19 @@ class ManejadorCamaraRemota1
     }
 
     private fun inicializarSurfaceView(viewRenderer: SurfaceViewRenderer)  = viewRenderer.run {
-//        setMirror(true)
+        setMirror(true)
         setEnableHardwareScaler(true)
         init(rootEglBase.eglBaseContext,null)
     }
 
     fun iniciarVideoCaptura(){
-        camara_remota.post {
-
+        videoLocal.post {
             val surfaceTextureHelper = SurfaceTextureHelper.create(Thread.currentThread().name,rootEglBase.eglBaseContext)
-            (videoCapturer as VideoCapturer).initialize(surfaceTextureHelper,camara_remota.context,localVideoSource.capturerObserver)
+            (videoCapturer as VideoCapturer).initialize(surfaceTextureHelper,videoLocal.context,localVideoSource.capturerObserver)
             videoCapturer.startCapture(320,240,60)
 
             val localVideoTrack = peerConnectionFactory.createVideoTrack(LOCAL_TRACK_ID,localVideoSource)
-            localVideoTrack.addSink(camara_remota)
+            localVideoTrack.addSink(videoLocal)
 
             val localStream = peerConnectionFactory.createLocalMediaStream(LOCAL_SREAM_ID)
             localStream.addTrack(localVideoTrack)
@@ -82,16 +79,18 @@ class ManejadorCamaraRemota1
         }
     }
 
+
     private var escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit) ?= null
-    fun conEscuchadorMediaStreamCamaraRemota(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraRemota1 {
+    fun conEscuchadorMediaStreamCamaraLocal(escuchadorMediaStreamCamaraLocal : ((MediaStream)->Unit)) : ManejadorCamaraLocal {
         this.escuchadorMediaStreamCamaraLocal = escuchadorMediaStreamCamaraLocal
         return this
     }
 
-    private var escuchadorPeerConnectionFactory : ((PeerConnectionFactory?)->Unit)?= null
-    fun conEscuchadorPeerConnectionFactory(escuchadorPeerConnectionFactory : ((PeerConnectionFactory?)->Unit)) : ManejadorCamaraRemota1{
+    private var escuchadorPeerConnectionFactory : ((PeerConnectionFactory?)->Unit) ?=null
+    fun conEscuchadorPeerConnectionFactory(escuchadorPeerConnectionFactory : ((PeerConnectionFactory?)->Unit)) : ManejadorCamaraLocal {
         this.escuchadorPeerConnectionFactory = escuchadorPeerConnectionFactory
         return this
     }
+
 
 }

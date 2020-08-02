@@ -1,11 +1,11 @@
-package com.mitiempo.videollamada.vistaVideollamada.ManejadorVideollamada.utlilidadesCamaraRemota
+package com.mitiempo.videollamada.vistaVideollamada.intento_1.ManejadorVideollamada.utlilidadesCamaraRemota
 
 import org.webrtc.*
 
 class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
 
     private var escuchadorOnIceCandidate : ((p0: IceCandidate?)->Unit) ?= null
-    fun conEscuchadorOnIceCandidate(escuchadorOnIceCandidate : ((p0: IceCandidate?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnIceCandidate(escuchadorOnIceCandidate : ((p0: IceCandidate?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.escuchadorOnIceCandidate = escuchadorOnIceCandidate
         return this
     }
@@ -15,7 +15,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnDataChannel : ((p0: DataChannel?)->Unit) ?= null
-    fun conEscuchadorOnDataChannel(EscuchadorOnDataChannel : ((p0: DataChannel?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnDataChannel(EscuchadorOnDataChannel : ((p0: DataChannel?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnDataChannel = EscuchadorOnDataChannel
         return this
     }
@@ -25,7 +25,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnIceConnectionReceivingChange : ((p0: Boolean?)->Unit) ?= null
-    fun conEscuchadorOnIceConnectionReceivingChange(EscuchadorOnIceConnectionReceivingChange : ((p0: Boolean?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnIceConnectionReceivingChange(EscuchadorOnIceConnectionReceivingChange : ((p0: Boolean?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnIceConnectionReceivingChange = EscuchadorOnIceConnectionReceivingChange
         return this
     }
@@ -35,7 +35,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnIceConnectionChange : ((p0: PeerConnection.IceConnectionState?)->Unit) ?= null
-    fun conEscuchadorOnIceConnectionChange(EscuchadorOnIceConnectionChange : ((p0: PeerConnection.IceConnectionState?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnIceConnectionChange(EscuchadorOnIceConnectionChange : ((p0: PeerConnection.IceConnectionState?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnIceConnectionChange = EscuchadorOnIceConnectionChange
         return this
     }
@@ -45,7 +45,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnIceGatheringChange : ((p0: PeerConnection.IceGatheringState?)->Unit) ?= null
-    fun conEscuchadorOnIceGatheringChange(EscuchadorOnIceGatheringChange : ((p0: PeerConnection.IceGatheringState?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnIceGatheringChange(EscuchadorOnIceGatheringChange : ((p0: PeerConnection.IceGatheringState?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnIceGatheringChange = EscuchadorOnIceGatheringChange
         return this
     }
@@ -55,7 +55,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnAddStream : ((p0: MediaStream?)->Unit) ?= null
-    fun conEscuchadorOnAddStream(EscuchadorOnAddStream : ((p0: MediaStream?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnAddStream(EscuchadorOnAddStream : ((p0: MediaStream?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnAddStream = EscuchadorOnAddStream
         return this
     }
@@ -65,7 +65,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnSignalingChange : ((p0: PeerConnection.SignalingState?)->Unit) ?= null
-    fun conEscuchadorOnSignalingChange(EscuchadorOnSignalingChange : ((p0: PeerConnection.SignalingState?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnSignalingChange(EscuchadorOnSignalingChange : ((p0: PeerConnection.SignalingState?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnSignalingChange = EscuchadorOnSignalingChange
         return this
     }
@@ -75,7 +75,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnIceCandidatesRemoved : ((p0: Array<out IceCandidate>?)->Unit) ?= null
-    fun conEscuchadorOnIceCandidatesRemoved(EscuchadorOnIceCandidatesRemoved : ((p0: Array<out IceCandidate>?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnIceCandidatesRemoved(EscuchadorOnIceCandidatesRemoved : ((p0: Array<out IceCandidate>?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnIceCandidatesRemoved = EscuchadorOnIceCandidatesRemoved
         return this
     }
@@ -85,7 +85,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnRemoveStream : ((p0: MediaStream?)->Unit) ?= null
-    fun conEscuchadorOnRemoveStream(EscuchadorOnRemoveStream : ((p0: MediaStream?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnRemoveStream(EscuchadorOnRemoveStream : ((p0: MediaStream?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnRemoveStream = EscuchadorOnRemoveStream
         return this
     }
@@ -95,7 +95,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnRenegotiationNeeded : (()->Unit) ?= null
-    fun conEscuchadorOnRenegotiationNeeded(EscuchadorOnRenegotiationNeeded : (()->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnRenegotiationNeeded(EscuchadorOnRenegotiationNeeded : (()->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnRenegotiationNeeded = EscuchadorOnRenegotiationNeeded
         return this
     }
@@ -105,7 +105,7 @@ class EscuchadorPeerConnectionObserver : PeerConnection.Observer {
     }
 
     private var EscuchadorOnAddTrack : ((p0: RtpReceiver?, p1: Array<out MediaStream>?)->Unit) ?= null
-    fun conEscuchadorOnAddTrack(EscuchadorOnAddTrack : ((p0: RtpReceiver?, p1: Array<out MediaStream>?)->Unit)) : EscuchadorPeerConnectionObserver{
+    fun conEscuchadorOnAddTrack(EscuchadorOnAddTrack : ((p0: RtpReceiver?, p1: Array<out MediaStream>?)->Unit)) : EscuchadorPeerConnectionObserver {
         this.EscuchadorOnAddTrack = EscuchadorOnAddTrack
         return this
     }
