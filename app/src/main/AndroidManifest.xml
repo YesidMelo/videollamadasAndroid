@@ -18,7 +18,7 @@
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute"
         android:usesCleartextTraffic="true"
         >
-        <activity android:name=".MainActivity">
+        <activity android:name=".vistaVideollamada.intento_1.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

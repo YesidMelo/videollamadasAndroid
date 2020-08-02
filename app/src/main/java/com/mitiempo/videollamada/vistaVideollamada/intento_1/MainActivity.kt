@@ -1,7 +1,8 @@
-package com.mitiempo.videollamada
+package com.mitiempo.videollamada.vistaVideollamada.intento_1
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.mitiempo.videollamada.R
 import kotlinx.android.synthetic.main.activity_main.*
 //codigo basado en https://github.com/amrfarid140/webrtc-android-codelab/tree/step/local-video
 class MainActivity : AppCompatActivity() {
