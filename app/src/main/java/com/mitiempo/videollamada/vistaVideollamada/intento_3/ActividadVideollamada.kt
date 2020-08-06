@@ -10,6 +10,7 @@ import com.mitiempo.videollamada.databinding.ActivitySamplePeerConnectionBinding
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.client.Socket.EVENT_CONNECT
+import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
 import pub.devrel.easypermissions.AfterPermissionGranted
@@ -190,12 +191,50 @@ class ActividadVideollamada : AppCompatActivity() {
         }
     }
 
+    private val OfferToReceiveAudio = "OfferToReceiveAudio"
+    private val OfferToReceiveVideo = "OfferToReceiveVideo"
+    private val _true = "true"
     private fun doCall(){
 
+        val sdpMediaConstraints = MediaConstraints()
+        sdpMediaConstraints.mandatory.add(MediaConstraints.KeyValuePair(OfferToReceiveAudio,_true))
+        sdpMediaConstraints.mandatory.add(MediaConstraints.KeyValuePair(OfferToReceiveVideo,_true))
+
+        peerConnection?.createOffer(
+            SimpleSdpObserver()
+                .conEscuchadorOnCreateSuccess {
+                    sessionDescription ->
+
+                    peerConnection?.setLocalDescription(SimpleSdpObserver(),sessionDescription)
+                    val mensaje = JSONObject()
+
+                    try{
+                        mensaje.put(type,offer)
+                        mensaje.put(sdp,sessionDescription!!.description)
+                        sendMessage(mensaje)
+                    }catch (e : JSONException){
+                        e.printStackTrace()
+                    }
+
+        },sdpMediaConstraints)
+    }
+
+    private fun sendMessage(mensajeAEnviar  : JSONObject){
+        socket?.emit(message,mensajeAEnviar)
     }
 
     private fun doAnswer(){
+        peerConnection?.createAnswer(SimpleSdpObserver().conEscuchadorOnCreateSuccess {
+            sessionDescription ->
 
+            peerConnection?.setLocalDescription(SimpleSdpObserver(),sessionDescription)
+
+            val mensaje = JSONObject()
+            mensaje.put(type,answer)
+            mensaje.put(sdp,sessionDescription!!.description)
+            sendMessage(mensaje)
+
+        }, MediaConstraints())
     }
 
 }
