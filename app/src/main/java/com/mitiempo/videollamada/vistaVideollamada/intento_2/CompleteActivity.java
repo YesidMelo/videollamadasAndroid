@@ -53,30 +53,30 @@ public class CompleteActivity extends AppCompatActivity {
     public static final int VIDEO_RESOLUTION_HEIGHT = 720;
     public static final int FPS = 30;
 
-    private Socket socket;
-    private boolean isInitiator;
-    private boolean isChannelReady;
-    private boolean isStarted;
 
 
-    MediaConstraints audioConstraints;
+
+
+
+
+
     MediaConstraints videoConstraints;
     MediaConstraints sdpConstraints;
     VideoSource videoSource;
     VideoTrack localVideoTrack;
-    AudioSource audioSource;
-    AudioTrack localAudioTrack;
+
     SurfaceTextureHelper surfaceTextureHelper;
 
-    private ActivitySamplePeerConnectionBinding binding;
+
     private PeerConnection peerConnection;
-    private EglBase rootEglBase;
-    private PeerConnectionFactory factory;
-    private VideoTrack videoTrackFromCamera;
+
+
+
 
     //Firestore
 //    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private ActivitySamplePeerConnectionBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,21 +84,6 @@ public class CompleteActivity extends AppCompatActivity {
 //        setSupportActionBar(binding.toolbar);
 
         start();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (socket != null) {
-            sendMessage("bye");
-            socket.disconnect();
-        }
-        super.onDestroy();
     }
 
     @AfterPermissionGranted(RC_CALL)
@@ -121,6 +106,17 @@ public class CompleteActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+//region connectToSignallingServer
+    private Socket socket;
+    private boolean isInitiator;
+    private boolean isChannelReady;
+    private boolean isStarted;
     private void connectToSignallingServer() {
         try {
 //            socket = IO.socket("https://calm-badlands-59575.herokuapp.com/");
@@ -189,23 +185,6 @@ public class CompleteActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    //MirtDPM4
-    private void doAnswer() {
-        peerConnection.createAnswer(new SimpleSdpObserver() {
-            @Override
-            public void onCreateSuccess(SessionDescription sessionDescription) {
-                peerConnection.setLocalDescription(new SimpleSdpObserver(), sessionDescription);
-                JSONObject message = new JSONObject();
-                try {
-                    message.put("type", "answer");
-                    message.put("sdp", sessionDescription.description);
-                    sendMessage(message);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new MediaConstraints());
-    }
 
     private void maybeStart() {
         Log.d(TAG, "maybeStart: " + isStarted + " " + isChannelReady);
@@ -245,6 +224,35 @@ public class CompleteActivity extends AppCompatActivity {
         socket.emit("message", message);
     }
 
+    //MirtDPM4
+    private void doAnswer() {
+        peerConnection.createAnswer(new SimpleSdpObserver() {
+            @Override
+            public void onCreateSuccess(SessionDescription sessionDescription) {
+                peerConnection.setLocalDescription(new SimpleSdpObserver(), sessionDescription);
+                JSONObject message = new JSONObject();
+                try {
+                    message.put("type", "answer");
+                    message.put("sdp", sessionDescription.description);
+                    sendMessage(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new MediaConstraints());
+    }
+//    endregion
+
+    @Override
+    protected void onDestroy() {
+        if (socket != null) {
+            sendMessage("bye");
+            socket.disconnect();
+        }
+        super.onDestroy();
+    }
+
+    private EglBase rootEglBase;
     private void initializeSurfaceViews() {
         rootEglBase = EglBase.create();
         binding.surfaceView.init(rootEglBase.getEglBaseContext(), null);
@@ -258,12 +266,18 @@ public class CompleteActivity extends AppCompatActivity {
         //add one more
     }
 
+    private PeerConnectionFactory factory;
     private void initializePeerConnectionFactory() {
         PeerConnectionFactory.initializeAndroidGlobals(this, true, true, true);
         factory = new PeerConnectionFactory(null);
         factory.setVideoHwAccelerationOptions(rootEglBase.getEglBaseContext(), rootEglBase.getEglBaseContext());
     }
 
+
+    MediaConstraints audioConstraints;
+    private VideoTrack videoTrackFromCamera;
+    AudioSource audioSource;
+    AudioTrack localAudioTrack;
     private void createVideoTrackFromCameraAndShowIt() {
         audioConstraints = new MediaConstraints();
         VideoCapturer videoCapturer = createVideoCapturer();
@@ -280,17 +294,51 @@ public class CompleteActivity extends AppCompatActivity {
 
     }
 
-    private void initializePeerConnections() {
-        peerConnection = createPeerConnection(factory);
+    private VideoCapturer createVideoCapturer() {
+        VideoCapturer videoCapturer;
+        if (useCamera2()) {
+            videoCapturer = createCameraCapturer(new Camera2Enumerator(this));
+        } else {
+            videoCapturer = createCameraCapturer(new Camera1Enumerator(true));
+        }
+        return videoCapturer;
     }
 
-    private void startStreamingVideo() {
-        MediaStream mediaStream = factory.createLocalMediaStream("ARDAMS");
-        mediaStream.addTrack(videoTrackFromCamera);
-        mediaStream.addTrack(localAudioTrack);
-        peerConnection.addStream(mediaStream);
+    private boolean useCamera2() {
+        return Camera2Enumerator.isSupported(this);
+    }
 
-        sendMessage("got user media");
+    private VideoCapturer createCameraCapturer(CameraEnumerator enumerator) {
+        final String[] deviceNames = enumerator.getDeviceNames();
+
+        for (String deviceName : deviceNames) {
+            if (enumerator.isFrontFacing(deviceName)) {
+                VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+
+                if (videoCapturer != null) {
+                    return videoCapturer;
+                }
+            }
+        }
+
+        for (String deviceName : deviceNames) {
+            if (!enumerator.isFrontFacing(deviceName)) {
+                VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+
+                if (videoCapturer != null) {
+                    return videoCapturer;
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+
+
+    private void initializePeerConnections() {
+        peerConnection = createPeerConnection(factory);
     }
 
     private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
@@ -374,44 +422,19 @@ public class CompleteActivity extends AppCompatActivity {
         return factory.createPeerConnection(rtcConfig, pcConstraints, pcObserver);
     }
 
-    private VideoCapturer createVideoCapturer() {
-        VideoCapturer videoCapturer;
-        if (useCamera2()) {
-            videoCapturer = createCameraCapturer(new Camera2Enumerator(this));
-        } else {
-            videoCapturer = createCameraCapturer(new Camera1Enumerator(true));
-        }
-        return videoCapturer;
+    private void startStreamingVideo() {
+        MediaStream mediaStream = factory.createLocalMediaStream("ARDAMS");
+        mediaStream.addTrack(videoTrackFromCamera);
+        mediaStream.addTrack(localAudioTrack);
+        peerConnection.addStream(mediaStream);
+
+        sendMessage("got user media");
     }
 
-    private VideoCapturer createCameraCapturer(CameraEnumerator enumerator) {
-        final String[] deviceNames = enumerator.getDeviceNames();
 
-        for (String deviceName : deviceNames) {
-            if (enumerator.isFrontFacing(deviceName)) {
-                VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
 
-                if (videoCapturer != null) {
-                    return videoCapturer;
-                }
-            }
-        }
 
-        for (String deviceName : deviceNames) {
-            if (!enumerator.isFrontFacing(deviceName)) {
-                VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
 
-                if (videoCapturer != null) {
-                    return videoCapturer;
-                }
-            }
-        }
 
-        return null;
-    }
-
-    private boolean useCamera2() {
-        return Camera2Enumerator.isSupported(this);
-    }
 
 }
