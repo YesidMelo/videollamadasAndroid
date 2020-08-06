@@ -2,7 +2,9 @@ package com.mitiempo.videollamada.vistaVideollamada.intento_2;
 
 import android.Manifest;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,12 +28,12 @@ import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
-import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
+import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
@@ -52,18 +54,50 @@ public class CompleteActivity extends AppCompatActivity {
     public static final int VIDEO_RESOLUTION_WIDTH = 1280;
     public static final int VIDEO_RESOLUTION_HEIGHT = 720;
     public static final int FPS = 30;
+    public static final String ConfiguracionVideollamada = "ConfiguracionVideollamada";
 
     //Firestore
 //    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    public static class ElementosDeConfiguracion implements Serializable {
+        public String URL;
+        public String Sala;
+        public String iceServer;
+    }
 
     private ActivitySamplePeerConnectionBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sample_peer_connection);
-//        setSupportActionBar(binding.toolbar);
 
+        if(!ingresoParametrosDeVideollamada()){
+            Toast.makeText(this,"No puede realizarse esta videollamada",Toast.LENGTH_LONG).show();
+           return;
+        }
         start();
+    }
+
+    private boolean ingresoParametrosDeVideollamada(){
+
+        try {
+            ElementosDeConfiguracion elementosDeConfiguracion = (ElementosDeConfiguracion) getIntent().getExtras().get(ConfiguracionVideollamada);
+
+            if(elementosDeConfiguracion == null){ return false; }
+
+            if(elementosDeConfiguracion.iceServer == null && elementosDeConfiguracion.Sala == null && elementosDeConfiguracion.URL == null ){ return false; }
+
+
+            iceServer = elementosDeConfiguracion.iceServer;
+            servidor = elementosDeConfiguracion.URL;
+            Sala = elementosDeConfiguracion.Sala;
+
+            Log.e(TAG,"");
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @AfterPermissionGranted(RC_CALL)
@@ -97,7 +131,9 @@ public class CompleteActivity extends AppCompatActivity {
     private boolean isInitiator;
     private boolean isChannelReady;
     private boolean isStarted;
-    private String servidor = "http://192.168.0.3:3000/";
+    private String servidor = "";
+    private String Sala = "";
+
     private String ipaddr = "ipaddr";
     private String created = "created";
     private String full = "full";
@@ -113,7 +149,7 @@ public class CompleteActivity extends AppCompatActivity {
 
             socket.on(EVENT_CONNECT, args -> {
                 Log.d(TAG, "connectToSignallingServer: connect");
-                socket.emit("create or join", "foo");
+                socket.emit("create or join", Sala);
             }).on(ipaddr, args -> {
                 Log.d(TAG, "connectToSignallingServer: ipaddr");
             }).on(created, args -> {
@@ -326,7 +362,7 @@ public class CompleteActivity extends AppCompatActivity {
 
 
     private PeerConnection peerConnection;
-    private String iceServer = "stun:stun.l.google.com:19302";
+    private String iceServer = "";
     private void initializePeerConnections() {
         peerConnection = createPeerConnection(factory);
     }
