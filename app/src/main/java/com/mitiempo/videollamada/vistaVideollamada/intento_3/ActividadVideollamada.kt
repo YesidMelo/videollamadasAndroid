@@ -15,6 +15,7 @@ import org.json.JSONObject
 import org.webrtc.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+import java.util.ArrayList
 
 
 class ActividadVideollamada : AppCompatActivity() {
@@ -24,27 +25,14 @@ class ActividadVideollamada : AppCompatActivity() {
         private const val TAG = "ActividadVideollamada"
         private const val RC_CALL = 111
         private const val VIDEO_TRACK_ID = "ARDAMSv0"
+        private const val MEDIA_STREAM_ID = "ARDAMS"
         private const val VIDEO_RESOLUTION_WIDTH  = 1280
         private const val VIDEO_RESOLUTION_HEIGTH = 720
         private const val FPS = 30
 
     }
 
-
-
-
-    private var isStarted = false
-
-
-
-
-
     private var binding : ActivitySamplePeerConnectionBinding ?= null
-    private var peerConnection : PeerConnection ?= null
-
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sample_peer_connection)
@@ -62,6 +50,8 @@ class ActividadVideollamada : AppCompatActivity() {
         initializeSurfaceViews()
         initializePeerConnectionFactory()
         createVideoTrackFromCameraAndShowIt()
+        initializePeerConnections()
+        startStreamingVideo()
 
     }
 
@@ -184,6 +174,7 @@ class ActividadVideollamada : AppCompatActivity() {
         return this
     }
 
+    private var isStarted = false
     private fun maybeStart(){
         Log.d(TAG, "maybeStart $isStarted $isChannelReady")
         if(!isStarted && isChannelReady){
@@ -222,7 +213,7 @@ class ActividadVideollamada : AppCompatActivity() {
         },sdpMediaConstraints)
     }
 
-    private fun sendMessage(mensajeAEnviar  : JSONObject){
+    private fun sendMessage(mensajeAEnviar  : Any){
         socket?.emit(message,mensajeAEnviar)
     }
 
@@ -266,6 +257,7 @@ class ActividadVideollamada : AppCompatActivity() {
 
     }
 
+//  region inicializa captura de video y audio
     private var audioConstraints : MediaConstraints ?= null
     private var videoTrackFromCamera : VideoTrack ?= null
     private var audioSource : AudioSource ?= null
@@ -325,4 +317,84 @@ class ActividadVideollamada : AppCompatActivity() {
 
         return null
     }
+//    endregion
+
+// region trae informacion remota para video
+    private var peerConnection : PeerConnection ?= null
+    private fun initializePeerConnections(){
+        peerConnection = createPeerConnection(factory)
+    }
+
+    private val iceServer = "stun:stun.l.google.com:19302"
+    private fun createPeerConnection(factory: PeerConnectionFactory?): PeerConnection? {
+
+        val iceServers : ArrayList<PeerConnection.IceServer> = ArrayList<PeerConnection.IceServer>()
+        iceServers.add(PeerConnection.IceServer(iceServer))
+
+        val rtcConfig = PeerConnection.RTCConfiguration(iceServers)
+        val pcConstraints = MediaConstraints()
+
+        return factory!!.createPeerConnection(
+            rtcConfig,
+            pcConstraints,
+            SimplePeerConnectionObserver()
+                .conEscuchadorOnSignalingChange { Log.e(TAG,"onSignalingChange") }
+                .conEscuchadorOnIceConnectionChange { Log.e(TAG,"onIceConnectionChange") }
+                .conEscuchadorOnIceConnectionReceivingChange { Log.e(TAG,"onIceConnectionReceivingChange") }
+                .conEscuchadorOnIceGatheringChange { Log.e(TAG,"onIceGatheringChange") }
+                .conEscuchadorOnIceCandidatesRemoved { Log.e(TAG,"onIceCandidateRemoved ") }
+                .conEscuchadorOnRemoveStream { Log.e(TAG,"onRemovedStream ") }
+                .conEscuchadorOnDataChannel { Log.e(TAG,"onDataChannel ") }
+                .conEscuchadorOnRenegotiationNeeded { Log.e(TAG,"onRenegotiationNeeded ") }
+                .conEscuchadorOnIceCandidate {
+                    iceCandidate ->
+
+                    Log.e(TAG,"onIceCandidate")
+                    val mensaje = JSONObject()
+                    mensaje.put(type,candidate)
+                    mensaje.put(label,iceCandidate!!.sdpMLineIndex)
+                    mensaje.put(id,iceCandidate.sdpMid)
+                    mensaje.put(candidate,iceCandidate.sdp)
+                    Log.e(TAG,"onIceCandidate : sending candidate $mensaje")
+                    sendMessage(mensaje)
+
+                }
+                .conEscuchadorOnAddStream {
+                    mediaStream ->
+
+                    Log.e(TAG,"onAddStream ${mediaStream!!.videoTracks.size}")
+
+                    val remoteVideoTrack = mediaStream.videoTracks[0]
+                    val remoteAudioTrack = mediaStream.audioTracks[0]
+
+                    remoteAudioTrack.setEnabled(true)
+                    remoteVideoTrack.setEnabled(true)
+                    remoteVideoTrack.addRenderer(VideoRenderer(binding!!.surfaceView2))
+
+                }
+
+        )
+    }
+
+//    endregion
+
+    private fun startStreamingVideo(){
+
+        val mediaStream = factory?.createLocalMediaStream(MEDIA_STREAM_ID)
+        mediaStream?.addTrack(videoTrackFromCamera)
+        mediaStream?.addTrack(localAudioTrack)
+        peerConnection?.addStream(mediaStream)
+
+        sendMessage("got user media ")
+
+    }
+
+    override fun onDestroy() {
+        if(socket != null ){
+            sendMessage("bye")
+            socket?.disconnect()
+        }
+        super.onDestroy()
+    }
+
 }
