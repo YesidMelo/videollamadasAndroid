@@ -33,6 +33,10 @@
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
         <activity android:name=".vistaVideollamada.intento_2.CompleteActivity">
+
+        </activity>
+
+        <activity android:name=".vistaVideollamada.intento_3.ActividadVideollamada">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

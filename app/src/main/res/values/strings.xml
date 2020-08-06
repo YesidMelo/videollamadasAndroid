@@ -7,4 +7,5 @@
     <string name="videollamada">Videollamada</string>
     <string name="fallo_la_conexion_videollamada">Fallo la conexion a la videollamada</string>
     <string name="iniciar_videollamada">iniciar_videollamada</string>
+    <string name="traer_permisos">Necesita mas permisos</string>
 </resources>
