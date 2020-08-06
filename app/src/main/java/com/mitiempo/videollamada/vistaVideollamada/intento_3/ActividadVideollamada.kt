@@ -35,15 +35,15 @@ class ActividadVideollamada : AppCompatActivity() {
 
     private var isStarted = false
 
-    private var audioConstraints : MediaConstraints ?= null
-    private var AudioSource : AudioSource ?= null
-    private var localAudioTrack : AudioTrack ?= null
+
+
+
 
     private var binding : ActivitySamplePeerConnectionBinding ?= null
     private var peerConnection : PeerConnection ?= null
 
 
-    private var videoTrackFromCamera : VideoTrack ?= null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +61,7 @@ class ActividadVideollamada : AppCompatActivity() {
         connectToSignallingServer()
         initializeSurfaceViews()
         initializePeerConnectionFactory()
+        createVideoTrackFromCameraAndShowIt()
 
     }
 
@@ -265,5 +266,63 @@ class ActividadVideollamada : AppCompatActivity() {
 
     }
 
+    private var audioConstraints : MediaConstraints ?= null
+    private var videoTrackFromCamera : VideoTrack ?= null
+    private var audioSource : AudioSource ?= null
+    private var localAudioTrack : AudioTrack ?= null
+    private val idAudioTrack = "101"
+    private fun createVideoTrackFromCameraAndShowIt(){
 
+        audioConstraints = MediaConstraints()
+        val videoCapturer = createVideoCapturer()
+        val videoSource = factory?.createVideoSource(videoCapturer)
+        videoCapturer?.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGTH,FPS)
+
+        videoTrackFromCamera = factory?.createVideoTrack(VIDEO_TRACK_ID,videoSource!!)
+        videoTrackFromCamera?.setEnabled(true)
+        videoTrackFromCamera?.addRenderer(VideoRenderer(binding!!.surfaceView))
+
+        audioSource = factory?.createAudioSource(audioConstraints)
+        localAudioTrack= factory?.createAudioTrack(idAudioTrack,audioSource)
+    }
+
+    private fun createVideoCapturer() : VideoCapturer? {
+        val videoCapturer : VideoCapturer?
+        if(useCamera2()){
+            videoCapturer = createCameraCapturer(Camera2Enumerator(this))
+        }else {
+            videoCapturer = createCameraCapturer(Camera1Enumerator(true))
+        }
+        return videoCapturer
+    }
+
+    private fun useCamera2() : Boolean{
+        return Camera2Enumerator.isSupported(this)
+    }
+
+    private fun createCameraCapturer(enumerator: CameraEnumerator): VideoCapturer? {
+        val deviceNames = enumerator.deviceNames
+
+        for (deviceName in deviceNames) {
+            if (enumerator.isFrontFacing(deviceName)) {
+                val videoCapturer = enumerator.createCapturer(deviceName, null)
+
+                if (videoCapturer != null) {
+                    return videoCapturer
+                }
+            }
+        }
+
+        for (deviceName in deviceNames) {
+            if (!enumerator.isFrontFacing(deviceName)) {
+                val videoCapturer = enumerator.createCapturer(deviceName, null)
+
+                if (videoCapturer != null) {
+                    return videoCapturer
+                }
+            }
+        }
+
+        return null
+    }
 }
