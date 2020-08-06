@@ -53,26 +53,6 @@ public class CompleteActivity extends AppCompatActivity {
     public static final int VIDEO_RESOLUTION_HEIGHT = 720;
     public static final int FPS = 30;
 
-
-
-
-
-
-
-
-    MediaConstraints videoConstraints;
-    MediaConstraints sdpConstraints;
-    VideoSource videoSource;
-    VideoTrack localVideoTrack;
-
-    SurfaceTextureHelper surfaceTextureHelper;
-
-
-    private PeerConnection peerConnection;
-
-
-
-
     //Firestore
 //    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -117,36 +97,45 @@ public class CompleteActivity extends AppCompatActivity {
     private boolean isInitiator;
     private boolean isChannelReady;
     private boolean isStarted;
+    private String servidor = "http://192.168.0.3:3000/";
+    private String ipaddr = "ipaddr";
+    private String created = "created";
+    private String full = "full";
+    private String join = "join";
+    private String joined = "joined";
+    private String log = "log";
+    private String message = "message";
+
     private void connectToSignallingServer() {
         try {
 //            socket = IO.socket("https://calm-badlands-59575.herokuapp.com/");
-            socket = IO.socket("http://192.168.0.3:3000/");
+            socket = IO.socket(servidor);
 
             socket.on(EVENT_CONNECT, args -> {
                 Log.d(TAG, "connectToSignallingServer: connect");
                 socket.emit("create or join", "foo");
-            }).on("ipaddr", args -> {
+            }).on(ipaddr, args -> {
                 Log.d(TAG, "connectToSignallingServer: ipaddr");
-            }).on("created", args -> {
+            }).on(created, args -> {
                 Log.d(TAG, "connectToSignallingServer: created");
                 isInitiator = true;
-            }).on("full", args -> {
+            }).on(full, args -> {
                 Log.d(TAG, "connectToSignallingServer: full");
-            }).on("join", args -> {
+            }).on(join, args -> {
                 Log.d(TAG, "connectToSignallingServer: join");
                 Log.d(TAG, "connectToSignallingServer: Another peer made a request to join room");
                 Log.d(TAG, "connectToSignallingServer: This peer is the initiator of room");
                 isChannelReady = true;
-            }).on("joined", args -> {
+            }).on(joined, args -> {
                 Log.d(TAG, "connectToSignallingServer: joined");
                 isChannelReady = true;
-            }).on("log", args -> {
+            }).on(log, args -> {
                 for (Object arg : args) {
                     Log.d(TAG, "connectToSignallingServer: " + String.valueOf(arg));
                 }
-            }).on("message", args -> {
+            }).on(message, args -> {
                 Log.d(TAG, "connectToSignallingServer: got a message");
-            }).on("message", args -> {
+            }).on(message, args -> {
                 try {
                     if (args[0] instanceof String) {
                         String message = (String) args[0];
@@ -336,14 +325,15 @@ public class CompleteActivity extends AppCompatActivity {
 
 
 
-
+    private PeerConnection peerConnection;
+    private String iceServer = "stun:stun.l.google.com:19302";
     private void initializePeerConnections() {
         peerConnection = createPeerConnection(factory);
     }
 
     private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         ArrayList<PeerConnection.IceServer> iceServers = new ArrayList<>();
-        iceServers.add(new PeerConnection.IceServer("stun:stun.l.google.com:19302"));
+        iceServers.add(new PeerConnection.IceServer(iceServer));
 
         PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
         MediaConstraints pcConstraints = new MediaConstraints();
