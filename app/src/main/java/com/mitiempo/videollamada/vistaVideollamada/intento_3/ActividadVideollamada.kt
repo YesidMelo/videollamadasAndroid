@@ -41,7 +41,7 @@ class ActividadVideollamada : AppCompatActivity() {
 
     private var binding : ActivitySamplePeerConnectionBinding ?= null
     private var peerConnection : PeerConnection ?= null
-    private var rootEglBase : EglBase ?= null
+
     private var factory  : PeerConnectionFactory ?= null
     private var videoTrackFromCamera : VideoTrack ?= null
 
@@ -59,6 +59,7 @@ class ActividadVideollamada : AppCompatActivity() {
         }
 
         connectToSignallingServer()
+        initializeSurfaceViews()
 
     }
 
@@ -75,7 +76,7 @@ class ActividadVideollamada : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode,permissions,grantResults)
     }
-
+//region socket
     private var socket : Socket ?= null
     private val hostingVideollamada = "http://192.168.0.3:3000/"
     private val crearOUnirHabitacion = "create or join"
@@ -236,5 +237,20 @@ class ActividadVideollamada : AppCompatActivity() {
 
         }, MediaConstraints())
     }
+//endregion
 
+    private var rootEglBase : EglBase ?= null
+    private fun initializeSurfaceViews(){
+
+        rootEglBase = EglBase.create()
+        binding!!.surfaceView.init(rootEglBase!!.eglBaseContext,null )
+        binding!!.surfaceView.setEnableHardwareScaler(true)
+        binding!!.surfaceView.setMirror(true)
+
+        binding!!.surfaceView2.init(rootEglBase!!.eglBaseContext,null )
+        binding!!.surfaceView2.setEnableHardwareScaler(true)
+        binding!!.surfaceView2.setMirror(true)
+
+
+    }
 }
