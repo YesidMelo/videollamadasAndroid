@@ -42,7 +42,7 @@ class ActividadVideollamada : AppCompatActivity() {
     private var binding : ActivitySamplePeerConnectionBinding ?= null
     private var peerConnection : PeerConnection ?= null
 
-    private var factory  : PeerConnectionFactory ?= null
+
     private var videoTrackFromCamera : VideoTrack ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +60,7 @@ class ActividadVideollamada : AppCompatActivity() {
 
         connectToSignallingServer()
         initializeSurfaceViews()
+        initializePeerConnectionFactory()
 
     }
 
@@ -253,4 +254,16 @@ class ActividadVideollamada : AppCompatActivity() {
 
 
     }
+
+    private var factory  : PeerConnectionFactory ?= null
+    private fun initializePeerConnectionFactory(){
+
+        PeerConnectionFactory.initializeAndroidGlobals(this,true,true,true)
+        factory = PeerConnectionFactory(null )
+        factory?.setVideoHwAccelerationOptions(rootEglBase?.eglBaseContext,rootEglBase?.eglBaseContext)
+
+
+    }
+
+
 }
